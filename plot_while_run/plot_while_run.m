@@ -6,6 +6,7 @@ load(folder+"\pipe20.mat")
 load(folder+"\consumer32.mat")
 c = scaled_standard_constants;
 f= figure();
+
 for l=1:60:con32.p11_32.Time(end)
     current_time = l;%con32.p11_32.Time(end);
 
@@ -25,7 +26,7 @@ for l=1:60:con32.p11_32.Time(end)
     
     ylabel('Electricty price [EUR/kWh]')
     xlabel('Time [h]')
-    grid
+    grid 
     xlim([0 length(ctrl.mathcal_U.Data)])
 
     subplot(3,2,2)
@@ -57,7 +58,7 @@ for l=1:60:con32.p11_32.Time(end)
     %Prediction
     tower_volume(1) = getsampleusingtime(ctrl.volume, time_last_control+1).Data*1000;
     for i=2:25
-        tower_volume(i) = tower_volume(i-1) + sum_flow_prediction(i-1)*1000/6 -ctrl.Preducted_demand_vector.Data(i-1,:,k)*1000/6;
+        tower_volume(i) = tower_volume(i-1) + sum_flow_prediction(i-1)*1000 -ctrl.Preducted_demand_vector.Data(i-1,:,k)*1000;
     end
     time_tower_volume = k:24+k;
     stairs(time_tower_volume,tower_volume)
