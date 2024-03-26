@@ -24,7 +24,7 @@ c.v2=data.v2;
 c.A_31=data.A_31; 
 c.A_32=data.A_32; 
 %sqp-legacy
- options = optimoptions(@fmincon,'Algorithm','sqp-legacy');
+ options = optimoptions(@fmincon,'Algorithm','sqp');
  %options = optimoptions(@fmincon,'Algorithm','interior-point');
 
 

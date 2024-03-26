@@ -47,7 +47,7 @@ total=c.Nc*c.Nu;
 %% Water level in water tower (need for the cost functions)
     h=@(u) c.g0*c.rhoW*1/c.At*(c.A_2*(c.A_1*u(1:total,1)-c.d)+c.V);
 
-            A.extract = c.v2';  
+        A.extract = c.v2';  
         B.extract = c.TdMax2;
         A.pumpU = c.A_32; 
         B.pumpU = ones(c.Nc,1)*c.umax2; 
