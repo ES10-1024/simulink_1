@@ -59,7 +59,7 @@ total=c.Nc*c.Nu;
         BB=[B.extract;B.pumpU;B.pumpL];
 
         %Defining the cost function:
-        J_l= @(u) ones(1,c.Nc)*(c.e1*c.Je/1000.*(c.A_31*(u(1:total,1).*abs(u(1:total,1)).*u(1:total,1)/3600^3*c.rf1 + u(1:total,1)/3600*c.g0*c.rhoW*c.z1)+ (c.A_31*u(1:total,1)/3600).*h(u)+c.A_31*u(1:total,1)/3600.*(c.rfTogether*(c.A_1*abs(u(1:total,1))/3600).*(c.A_1*u(1:total,1)/3600))));
+        J_l= @(u) ones(1,c.Nc)*(c.e1*c.Je.*(c.A_31*(abs(u).*abs(u).*abs(u)*(c.rf1/1000) + u*c.g0*c.rhoW*(c.z1/1000))+ (c.A_31*u).*(h(u)/1000)+c.A_31*u.*((c.rfTogether/1000)*(c.A_1*abs(u)).*(c.A_1*u))));
 
             %% Cost function definition
 
