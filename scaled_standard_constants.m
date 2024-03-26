@@ -95,8 +95,8 @@ constants.Nc = 24;
 constants.AccTime=6; 
 %% Variables defining for the consensus algortime 
 %Defining amount of iteration that the consensus ADMM should do 
-constants.iteration=300;
+constants.iteration=600;
 
-constants.rho=0.08;
+constants.rho=0.14;
 
 end
