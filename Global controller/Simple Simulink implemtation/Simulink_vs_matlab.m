@@ -24,6 +24,8 @@ stairs(sum_flow_command_Simulink)
 hold off 
 grid 
 legend("Lab","Simulink")
+xlabel('Time [hr]')
+ylabel('Summed acutation signal [m^{3}/s]') 
 
 %Plotting water volume difference 
 WaterHeightmmSimulink=simData.logsout{3}.Values.Data; 
@@ -35,7 +37,6 @@ TimesAll=tow34.tank_34_mm.Time;
 index=1; 
 TimelookingFor=600; 
 for i=1:size(WaterHeightmmLabAll,3); 
-%række 3001 6001 også videre 
 if  round(TimesAll(i,1))==TimelookingFor
     WaterHeightmmLab(index,1)=WaterHeightmmLabAll(1,1,i); 
     TimelookingFor=TimelookingFor+600;
@@ -49,7 +50,11 @@ hold on
 plot(WaterHeightmmLab)
 plot(WaterHeightmmSimulink) 
 hold off 
+xlabel('Time [hr]') 
+ylabel('Water height [mm]')
+grid on 
 
+legend("Lab","Simulink")
 
 
 

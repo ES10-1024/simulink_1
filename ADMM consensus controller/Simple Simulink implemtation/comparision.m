@@ -1,12 +1,15 @@
-load("simulationOutput.mat")
-consensusUall=out.logsout{12}.Values.data; 
+clear 
+%Loading in the simulation results 
+load("simulationSQPV2.mat")
+consensusUall=out.logsout{15}.Values.data; 
 
 
+%Loading in matlab results
 index=1;
-load("matlabConsensusU.mat")
-xUsedMatlab=xUsed(:,:); 
-clear xUsed 
-c=scaled_standard_constants
+matlab=load("AllMatlabData.mat")
+xUsedMatlabconsensus=matlab.xUsed(:,:); 
+
+c=scaled_standard_constants;
 
 
 for k=1:size(consensusUall,3)
@@ -23,9 +26,11 @@ close all
 clf 
 
 hold on 
-plot(max(abs(xUsedSimulink-xUsedMatlab(:,1:size(consensusUall,3)))))
+plot(max(abs(xUsedSimulink-xUsedMatlabconsensus(:,1:size(consensusUall,3)))))
 hold off 
 %legend('Simulink','Matlab')
+
+
 %% Checking cost function difference 
 
 c.A_1=[];
@@ -63,7 +68,7 @@ for i=1:size(consensusUall,3)
     c.d=consumption(:,:,i);
     c.Je=Elprice(:,:,i);
     costSimulink(i)=costFunction(xUsedSimulink(:,i),c); 
-    costMatlab(i)=costFunction(xUsedMatlab(:,i),c);
+    costMatlab(i)=costFunction(xUsedMatlabconsensus(:,i),c);
     procentWiseDifference(i)=(costSimulink(i)-costMatlab(i))/costMatlab(i)*100;
 end 
 

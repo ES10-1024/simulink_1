@@ -28,7 +28,7 @@ for l=600:600:con32.p11_32.Time(end)
     
     ylabel('Electricty price [EUR/kWh]')
     xlabel('Time [h]')
-    grid
+    grid 
     xlim([0 length(ctrl.mathcal_U.Data)])
     ylim([0 0.2])
 
