@@ -106,4 +106,6 @@ constants.prime=15000017;
 constants.scaling=100000; 
 
 
+constants.sMPCOffset=45;
+
 end

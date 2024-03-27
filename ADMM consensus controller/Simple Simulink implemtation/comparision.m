@@ -11,7 +11,7 @@ xUsedMatlabconsensus=matlab.xUsed(:,:);
 
 c=scaled_standard_constants;
 
-
+%% 
 for k=1:size(consensusUall,3)
     for i=1:c.Nu*c.Nc
          xUsedSimulink(i,k)=consensusUall(i,index,k);
@@ -22,9 +22,9 @@ for k=1:size(consensusUall,3)
     end
     index=1; 
 end 
-close all 
-clf 
-
+%close all 
+%clf 
+%% 
 hold on 
 plot(max(abs(xUsedSimulink-xUsedMatlabconsensus(:,1:size(consensusUall,3)))))
 hold off 
