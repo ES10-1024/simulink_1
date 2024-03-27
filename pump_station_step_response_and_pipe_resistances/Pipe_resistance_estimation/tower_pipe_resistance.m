@@ -1,4 +1,4 @@
-load("pump_station_step_response_and_pipe_resistances\Pipe_resistance_estimation\Flow_combinations_tower_pipe_resistance.mat")
+load("pump_station_step_response_and_pipe_resistances\Pipe_resistance_estimation\tower_resistance_steps_v3.mat")
 
 figure
 subplot(3,1,1)
@@ -34,6 +34,7 @@ p_tower = out.tower_34.tank_34_mm/1000/10; %[bar]
 p_drop = out.pipe_20.p43_20 - p_tower
 
 times = 115:60:500;
+times = [times(1), times(3:end)]
 p_analysis = squeeze(p_drop.Data(times));
 q_analysis = squeeze(out.pipe_20.q4_20.Data(times));
 
