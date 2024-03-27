@@ -47,8 +47,8 @@ constants.e2=1.3; %To Be Updated!
 
 
 % Defining pipe resistance  (stupied units so not included here
-constants.rf1=0.3*10^5; 
-constants.rf2=0.1*10^5; 
+constants.rf1=0.35*10^5;%0.3*10^5; 
+constants.rf2=0.42*10^5;%0.1*10^5; 
 
 %Defining ressistance after 
 constants.rfTogether = 0.3*10^5; 
@@ -95,8 +95,17 @@ constants.Nc = 24;
 constants.AccTime=6; 
 %% Variables defining for the consensus algortime 
 %Defining amount of iteration that the consensus ADMM should do 
-constants.iteration=600;
+constants.iteration=80;
 
-constants.rho=0.14;
+constants.rho=150;
+%% SMPC varaibles 
+  %% Constraints   
+%Defining the primenumber for the finith field 
+constants.prime=15000017; 
+% Defining scaling factor 
+constants.scaling=100000; 
+
+
+constants.sMPCOffset=45;
 
 end
