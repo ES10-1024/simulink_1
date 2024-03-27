@@ -1,13 +1,16 @@
 close
 
-folder = 'C:\Users\laula\OneDrive - Aalborg Universitet\10. semester\Log_files\Test_01'
+folder = 'C:\Users\laula\OneDrive - Aalborg Universitet\10. semester\Log_files\Test_02'
 load(folder+"\controller.mat");
 load(folder+"\pipe20.mat")
 load(folder+"\consumer32.mat")
+load(folder+"\consumption_ref.mat")
+load(folder+"\pump41.mat")
+load(folder+"\pump43.mat")
 c = scaled_standard_constants;
 f= figure('Position', [10 10 900 600]);
 
-for l=600:600:con32.p11_32.Time(end)
+for l=con32.p11_32.Time(end)%600:100:con32.p11_32.Time(end)
     %l=600*78-120
     l/con32.p11_32.Time(end)*100
     current_time = l;%con32.p11_32.Time(end);
@@ -45,7 +48,7 @@ for l=600:600:con32.p11_32.Time(end)
     sum_flow_commanded = squeeze(ctrl.actuation.Data(1,:,1:k) + ctrl.actuation.Data(2,:,1:k));
     stairs(ctrl.actuation.Time(1:k)/3600*6, sum_flow_commanded)
     %Past flow
-    sum_flow_past = pipe20.q2_20 + pipe20.q4_20;
+    sum_flow_past = pipe20.q3_20 + pipe20.q4_20;
     sum_flow_past = getsampleusingtime(sum_flow_past,0,current_time);
     plot(sum_flow_past.Time/3600*6, movmean(squeeze(sum_flow_past.Data)/6,600))
     
@@ -85,7 +88,7 @@ for l=600:600:con32.p11_32.Time(end)
     %Demand prediction
     stairs(time_prediction,ctrl.Preducted_demand_vector.Data(:,:,k))
     %Demand commanded
-    stairs(ctrl.Preducted_demand_vector.Time(1:k)/3600*6,squeeze(ctrl.Preducted_demand_vector.Data(1,:,1:k)))
+    stairs(con_ref.Time(1:k)/3600*6,squeeze(con_ref.Data(1:k)))
     %Demand past
     sum_consumption = con32.q_32_v1 + con32.q_32_v2;
     sum_consumption = getsampleusingtime(sum_consumption,0,current_time);
@@ -99,5 +102,33 @@ for l=600:600:con32.p11_32.Time(end)
 
     fontname(f,"Times")
     drawnow
-    exportgraphics(f,folder+"\plot.gif", Append=true)
+    %exportgraphics(f,folder+"\plot.gif", Append=true)
 end
+%% Check pump flows
+figure()
+subplot(3,1,1)
+hold on
+plot(pump41.pump_41_ctrl_1.Time/3600*6,pump41.pump_41_ctrl_1.Data)
+plot(pump43.pump_43_ctrl_3.Time/3600*6,squeeze(pump43.pump_43_ctrl_3.Data))
+subplot(3,1,2)
+hold on
+sum_flow_commanded = squeeze(ctrl.actuation.Data(1,:,1:k));
+stairs(ctrl.actuation.Time(1:k)/3600*6, sum_flow_commanded)
+%Past flow
+sum_flow_past = pipe20.q2_20;
+sum_flow_past = getsampleusingtime(sum_flow_past,0,current_time);
+plot(sum_flow_past.Time/3600*6, movmean(squeeze(sum_flow_past.Data)/6,600))
+
+
+subplot(3,1,3)
+hold on
+sum_flow_commanded = squeeze(ctrl.actuation.Data(2,:,1:k));
+stairs(ctrl.actuation.Time(1:k)/3600*6, sum_flow_commanded)
+%Past flow
+sum_flow_past = pipe20.q3_20;
+sum_flow_past = getsampleusingtime(sum_flow_past,0,current_time);
+plot(sum_flow_past.Time/3600*6, movmean(squeeze(sum_flow_past.Data)/6,600))
+
+sum_flow_past = pipe20.q1_20;
+sum_flow_past = getsampleusingtime(sum_flow_past,0,current_time);
+plot(sum_flow_past.Time/3600*6, movmean(squeeze(sum_flow_past.Data)/6,600))
