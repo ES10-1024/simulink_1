@@ -7,7 +7,7 @@ load(folder+"\consumer32.mat")
 c = scaled_standard_constants;
 f= figure();
 
-for l=1:60:con32.p11_32.Time(end)
+for l=con32.p11_32.Time(end)
     current_time = l;%con32.p11_32.Time(end);
 
     time_last_control = floor(current_time/3600*6)*3600/6;
@@ -88,5 +88,5 @@ for l=1:60:con32.p11_32.Time(end)
    xlim([0 length(ctrl.mathcal_U.Data)])
 
     fontname(f,"Times")
-    exportgraphics(f,folder+"\plot.gif", Append=true)
+%    exportgraphics(f,folder+"\plot.gif", Append=true)
 end
