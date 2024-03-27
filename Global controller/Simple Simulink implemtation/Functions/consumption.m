@@ -65,9 +65,9 @@ NewDemand_data=NewDemand_data/samplesChanges;
 %% Determining consumption model
 %First the start position is determinted in regard to time of week. 
 if usedAccTime == true 
-    StartPosition=(currentTime*c.AccTime)-(floor((currentTime*c.AccTime)/(SecondsPerWeek))*SecondsPerWeek);
+    StartPosition=(currentTime*c.AccTime);%-(floor((currentTime*c.AccTime)/(SecondsPerWeek))*SecondsPerWeek);
 else 
-    StartPosition=(currentTime)-(floor((currentTime)/(SecondsPerWeek))*SecondsPerWeek);
+    StartPosition=(currentTime);%-(floor((currentTime)/(SecondsPerWeek))*SecondsPerWeek);
 end 
 StartPosition=round(StartPosition)/3600+1;
 %The consumption with noise is not weekly wrap around and can therefore be set: 

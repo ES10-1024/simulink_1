@@ -101,9 +101,9 @@ constants.rho=150;
 %% SMPC varaibles 
   %% Constraints   
 %Defining the primenumber for the finith field 
-constants.prime=15013; 
+constants.prime=15000017; 
 % Defining scaling factor 
-constants.scaling=100; 
+constants.scaling=100000; 
 
 
 end
