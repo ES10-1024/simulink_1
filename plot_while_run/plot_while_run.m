@@ -1,6 +1,7 @@
 close
+clear 
 
-folder = 'C:\Users\pppc\Desktop\es1024_2023_git2\log'
+folder = 'C:\Users\is123\Documents\GitHub\P10_Simulink_V2\log'
 load(folder+"\controller.mat");
 load(folder+"\pipe20.mat")
 load(folder+"\consumer32.mat")
