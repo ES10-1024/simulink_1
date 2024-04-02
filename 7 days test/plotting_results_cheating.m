@@ -2,7 +2,7 @@ close
 clear 
 
 %% Loading in the data needed, all of these is on onedrive and NOT github! 
-folder = 'C:\Users\is123\Documents\GitHub\P10_Simulink_V2\Global controller\7 days test\Lab ADMM'
+folder = 'C:\Users\is123\Documents\GitHub\P10_Simulink_V2\7 days test\Lab ADMM'
 
 %Consensus ADMM data
 load(folder+"\controller.mat");
@@ -21,7 +21,7 @@ ADMM.pump41=pump41;
 ADMM.pump41=pump43;
 
 %Link: https://aaudk-my.sharepoint.com/personal/llaur19_student_aau_dk/_layouts/15/onedrive.aspx?e=5%3A691d3ed844e74bea9acc942f22505a6b&sharingv2=true&fromShare=true&at=9&cid=6b5fb676%2Dde35%2D4dfa%2Db995%2D77d14df8f194&FolderCTID=0x0120009878F72CDD1F8D4F9D8FC8AAF16F760F&id=%2Fpersonal%2Fllaur19%5Fstudent%5Faau%5Fdk%2FDocuments%2F10%2E%20semester%2FLog%5Ffiles%2FEaster%20test
-folder = 'C:\Users\is123\Documents\GitHub\P10_Simulink_V2\Global controller\7 days test\Lab global'
+folder = 'C:\Users\is123\Documents\GitHub\P10_Simulink_V2\7 days test\Lab global'
 load(folder+"\controller.mat");
 load(folder+"\pipe20.mat")
 load(folder+"\consumer32.mat")
