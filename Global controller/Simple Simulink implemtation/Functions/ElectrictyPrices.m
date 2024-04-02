@@ -20,14 +20,18 @@ end
 ElPrices=zeros(c.Nc,1);
 
 %% Loading in the eletricty prices
+%ElpriceAlot=load("ElPrice.mat");
+
 ElpriceAlot=load("ElPrice.mat");
+
+
 % Data=load("ElectrictyPrices.mat");
 % Data=Data.Data;
 % %Going from MWh to kWh: 
 % Data.NewPrice=Data.NewPrice/1000; 
-Data.NewPrice=ElpriceAlot.Elprice;
+Data.NewPrice=ElpriceAlot.A/1000;
 for index=1:c.Nc
-ElPrices(index,1)=Data.NewPrice(CurrentTimeHours+index-1);
+    ElPrices(index,1)=Data.NewPrice(CurrentTimeHours+index-1);
 end 
 %% Making vector of eletricty prices 
 % Determine the row to be entered based on how many days has gone by,
