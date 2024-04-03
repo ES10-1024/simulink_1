@@ -61,9 +61,11 @@ for l=con32.p11_32.Time(end)%600:100:con32.p11_32.Time(end)
     ylabel('Electricty price [EUR/kWh]')
     xlabel('Time [h]')
     grid 
-    xlim([0 15])
+    xlim([0 150])
     %xlim([0 length(ctrl.mathcal_U.Data)])    
     ylim([0 0.2])
+
+    title('Eletricity price')
 
     subplot(2,2,2)
     time_prediction = k-1:24+k-2;
@@ -86,6 +88,7 @@ for l=con32.p11_32.Time(end)%600:100:con32.p11_32.Time(end)
     timeADMM=0:size(ADMM.ctrl.actuation.Data,1)-1;
     sum_flow_ADMM_commanded =(ADMM.ctrl.actuation.Data(:,1)+ADMM.ctrl.actuation.Data(:,2))/6;  %squeeze(ADMM.ctrl.actuation.Data(1,:,1:k) + ADMM.ctrl.actuation.Data(2,:,1:k));
     stairs(timeADMM,sum_flow_ADMM_commanded)
+
     %Simulated Global 
     time=1:217;
     sim_flow=squeeze(sum(simData.logsout{1}.Values.Data));
@@ -102,14 +105,14 @@ for l=con32.p11_32.Time(end)%600:100:con32.p11_32.Time(end)
     
     ylabel('Sum of flow [m^3/h_s]')
     grid
-    xlim([1 40])
+    xlim([1 150])
     %xlim([0 length(ctrl.mathcal_U.Data)])
     ylim([0 0.1])
     title("Summed Acutation [m^3/h_s]")
 
+
     subplot(2,2,3)
     %Volume in tower
-    
     hold on
     %Prediction
     tower_volume = zeros(1,25);
@@ -139,13 +142,15 @@ for l=con32.p11_32.Time(end)%600:100:con32.p11_32.Time(end)
     yline(155)
     ylabel("Volume in tower [L]")
     grid
-    xlim([1 40])
+    xlim([1 150])
     %xlim([0 length(ctrl.mathcal_U.Data)])
     
     ylim([20 170])
     title("Volume in Tower [L]")
 
-    legend('Lab Global','Lab ADMM','Simulation')
+    legend('Lab Global','Lab ADMM','Sim Global','Sim ADMM')
+    
+        title('Volume in tower [L]')
 
     subplot(2,2,4)
     hold on
@@ -170,10 +175,12 @@ for l=con32.p11_32.Time(end)%600:100:con32.p11_32.Time(end)
     grid
     %legend("Prediction", "Commanded" , "Realized")
     legend("Commanded Simulation" , "Realized global", "Realized ADMM")
-    xlim([1 40])
+    xlim([1 150])
 
     %xlim([0 length(ctrl.mathcal_U.Data)])
     ylim([0 0.1])
+        title('Consumption')
+
 
     fontname(f,"Times")
     drawnow
@@ -219,7 +226,10 @@ plot(labGlobalBill)
 plot(labADMMBill)
 grid on
 hold off 
-legend("Sim Global","Sim ADMM"," lab Global","lab ADMM")
+legend("Sim Global","Sim ADMM"," lab Global","lab ADMM",'Location','south')
+xlabel('Time [hr]')
+ylabel('Eletricity bill [Euros]') 
+title('Eletricity bill [Euros]')
 
 %% 
 clear index
@@ -232,7 +242,9 @@ end
 figure(3)
 plot(ProcentDiff)
 grid 
-
+xlabel('Time [hr]')
+ylabel('Procent Wise  difference in cost function lab global and ADMM')
+title('Procent Wise  difference in cost function lab global and ADMM')
 
 
 
