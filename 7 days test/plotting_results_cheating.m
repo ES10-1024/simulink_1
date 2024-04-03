@@ -78,7 +78,12 @@ for l=con32.p11_32.Time(end)%600:100:con32.p11_32.Time(end)
     %stairs(time_prediction,sum_flow_prediction)
     %Past comanded
     sum_flow_commanded = squeeze(ctrl.actuation.Data(1,:,1:k) + ctrl.actuation.Data(2,:,1:k));
+    
+    
     stairs(ctrl.actuation.Time(1:k)/3600*6, sum_flow_commanded)
+
+
+
     %Past flow
     sum_flow_past = pipe20.q3_20 + pipe20.q4_20;
     sum_flow_past = getsampleusingtime(sum_flow_past,0,current_time);
