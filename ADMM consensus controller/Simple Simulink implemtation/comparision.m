@@ -1,7 +1,7 @@
 clear 
 %Loading in the simulation results 
 load("simulationSQPV2.mat")
-consensusUall=out.logsout{15}.Values.data; 
+consensusUall=out.logsout{13}.Values.data; 
 
 
 %Loading in matlab results

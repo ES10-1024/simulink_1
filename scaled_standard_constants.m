@@ -76,7 +76,7 @@ constants.NoiseVariance=4;
 
 
 %Defining wired K in the cost function
-constants.K=1/3600;  %To Be Updated!
+constants.K=0.2;
 
 %Weight for the price term
 constants.Kp=1; 
@@ -101,11 +101,13 @@ constants.rho=150;
 %% SMPC varaibles 
   %% Constraints   
 %Defining the primenumber for the finith field 
-constants.prime=15000017; 
+%constants.prime=15000017; 
+constants.prime=150001; 
+
 % Defining scaling factor 
-constants.scaling=100000; 
+%constants.scaling=100000; 
+constants.scaling=10000;
 
-
-constants.sMPCOffset=45;
-
+%constants.sMPCOffset=45;
+constants.sMPCOffset=1;
 end
