@@ -15,7 +15,7 @@ simTime=simHour/c.AccTime*3600;
 c.Tsim=num2str(simTime); 
 c.tsSim=num2str(c.ts*3600); 
 
-simData=sim('GlobalMPC.slx',"StartTime",'0',"StopTime",'1800','FixedStep','200');
+simData=sim('GlobalMPC.slx',"StartTime",'0',"StopTime",c.Tsim,'FixedStep','200');
 
 %save("GlobalControllerSimulink_7_days.mat",simData)
 

@@ -62,9 +62,11 @@ problem.Constraints.pump2L = c.A_32*u >=0;
 h=c.g0*c.rhoW*1/c.At*(c.A_2*(c.A_1*u-c.d)+c.V);
 
 %Defining cost function for each of the pumps  
-J1 = ones(1,c.Nc)*(c.e1*c.Je/1000.*(c.A_31*(u.*u.*u./3600^3*c.rf1 + u/3600*c.g0*c.rhoW*c.z1) + (c.A_31*u/3600).*h+c.A_31*u/3600.*(c.rfTogether*(c.A_1*u/3600).*(c.A_1*u/3600))));
-J2 = ones(1,c.Nc)*(c.e2*c.Je/1000.*(c.A_32*(u.*u.*u./3600^3*c.rf2 + u/3600*c.g0*c.rhoW*c.z2) + (c.A_32*u/3600).*h+c.A_32*u/3600.*(c.rfTogether*(c.A_1*u/3600).*(c.A_1*u/3600))));
-
+% J1 = ones(1,c.Nc)*(c.e1*c.Je/1000.*(c.A_31*(u.*u.*u./3600^3*c.rf1 + u/3600*c.g0*c.rhoW*c.z1) + (c.A_31*u/3600).*h+c.A_31*u/3600.*(c.rfTogether*(c.A_1*u/3600).*(c.A_1*u/3600))));
+% J2 = ones(1,c.Nc)*(c.e2*c.Je/1000.*(c.A_32*(u.*u.*u./3600^3*c.rf2 + u/3600*c.g0*c.rhoW*c.z2) + (c.A_32*u/3600).*h+c.A_32*u/3600.*(c.rfTogether*(c.A_1*u/3600).*(c.A_1*u/3600))));
+     J1 = ones(1,c.Nc)*(c.e1*c.Je.*(c.A_31*(u.*u.*u.*(c.rf1/1000) + u*c.g0*c.rhoW*(c.z1/1000)) + (c.A_31*u).*(h/1000)+c.A_31*u.*((c.rfTogether/1000)*(c.A_1*u).*(c.A_1*u))));
+     J2 = ones(1,c.Nc)*(c.e2*c.Je.*(c.A_32*(u.*u.*u.*(c.rf2/1000) + u*c.g0*c.rhoW*(c.z2/1000)) + (c.A_32*u).*(h/1000)+c.A_32*u.*((c.rfTogether/1000)*(c.A_1*u).*(c.A_1*u))));
+   
 %Defining that start and end volumen has to be the same 
 Js=c.K*(ones(1,c.Nc)*(c.A_1*u-c.d))^2;
 
