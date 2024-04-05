@@ -21,7 +21,7 @@ total=c.Nc*c.Nu;
  %If it desired to change the settings for the solver, use the one listed
  %below: 
  %options = optimoptions(@fmincon,'MaxFunctionEvaluations',10e4);
- options = optimoptions(@fmincon,'Algorithm','sqp');
+ %options = optimoptions(@fmincon,'Algorithm','sqp','MaxFunctionEvaluations',10e6);
 
 %% Making A and v matrices for the constraints
 %A_1 each row have 3 ones such that the flow from the given time stamp is
@@ -87,40 +87,64 @@ if scaled == false
 
 
     %Defining part which is about the height: 
-    height1=@(u) c.g0*c.rhoW*(h(u)+c.z1);
+    height1=@(u) 3600^2*c.g0*c.rhoW*(h(u)+c.z1);
     
-    height2=@(u) c.g0*c.rhoW*(h(u)+c.z2); 
+    height2=@(u) 3600^2*c.g0*c.rhoW*(h(u)+c.z2); 
     
     %Defining  part due to pipe resitance which is separated: 
-    PipeResistance1= @(u) c.rf1/3600^2*c.A_31*(u/3600.*abs(u/3600)); 
+    PipeResistance1= @(u) c.rf1*c.A_31*(u.*abs(u)); 
     
-    PipeResistance2= @(u) c.rf2/3600^2*c.A_32*(u/3600.*abs(u/3600)); 
+    PipeResistance2= @(u) c.rf2*c.A_32*(u.*abs(u)); 
     
     %Definine pipe resistance in the end with all flows: 
-    PipeResistanceTogether= @(u) c.rfTogether/3600^2*(abs(c.A_1*u/3600-c.d/3600).*abs(c.A_1*u/3600-c.d/3600)); 
+    PipeResistanceTogether= @(u) c.rfTogether*(abs(c.A_1*u-c.d).*(c.A_1*u-c.d)); 
     
     
     %Defining the cost function for the two pumps: 
     %Pump 1
-    Jl1= @(u) c.ts*ones(1,c.Nc)*(c.e1*c.Je/(3600*1000).*(c.A_31*u/3600.*(PipeResistance1(u)+PipeResistanceTogether(u)+height1(u)))); 
+    Jl1= @(u) c.ts*ones(1,c.Nc)*(c.e1*c.Je/(1000).*(c.A_31*u.*(PipeResistance1(u)+PipeResistanceTogether(u)+height1(u)))); 
     %Pump 2 
-    Jl2= @(u) c.ts*ones(1,c.Nc)*(c.e2*c.Je/(3600*1000).*(c.A_32*u/3600.*(PipeResistance2(u)+PipeResistanceTogether(u)+height2(u)))); 
+    Jl2= @(u) c.ts*ones(1,c.Nc)*(c.e2*c.Je/(1000).*(c.A_32*u.*(PipeResistance2(u)+PipeResistanceTogether(u)+height2(u)))); 
+    options = optimoptions(@fmincon,'Algorithm','sqp','MaxFunctionEvaluations',10e6);
 
 
 else 
 
+    % %Defining part which is about the height: 
+    % height1=@(u) c.g0*c.rhoW*(h(u)+c.z1);
+    % 
+    % height2=@(u) c.g0*c.rhoW*(h(u)+c.z2); 
+    % 
+    % %Defining  part due to pipe resitance which is separated: 
+    % PipeResistance1= @(u) c.rf1/3600*c.A_31*(u.*abs(u)); 
+    % 
+    % PipeResistance2= @(u) c.rf2/3600*c.A_32*(u.*abs(u)); 
+    % 
+    % %Definine pipe resistance in the end with all flows: 
+    % PipeResistanceTogether= @(u) c.rfTogether/3600*(abs(c.A_1*u-c.d).*abs(c.A_1*u-c.d)); 
+    % 
+    % 
+    % 
+    % 
+    % %Defining the cost function for the two pumps: 
+    % %Pump 1
+    % Jl1= @(u) ones(1,c.Nc)*(c.e1*c.Je.*(c.A_31*u.*(PipeResistance1(u)+PipeResistanceTogether(u)+height1(u)))); 
+    % %Pump 2 
+    % Jl2= @(u) ones(1,c.Nc)*(c.e2*c.Je.*(c.A_32*u.*(PipeResistance2(u)+PipeResistanceTogether(u)+height2(u)))); 
+
+
     %Defining part which is about the height: 
-    height1=@(u) c.g0*c.rhoW*(h(u)+c.z1);
+    height1=@(u) 3600^2/1000*c.g0*c.rhoW*(h(u)+c.z1);
     
-    height2=@(u) c.g0*c.rhoW*(h(u)+c.z2); 
+    height2=@(u) 3600^2/1000*c.g0*c.rhoW*(h(u)+c.z2); 
     
     %Defining  part due to pipe resitance which is separated: 
-    PipeResistance1= @(u) c.rf1/3600*c.A_31*(u.*abs(u)); 
+    PipeResistance1= @(u) c.rf1/100*c.A_31*(u.*abs(u)); 
     
-    PipeResistance2= @(u) c.rf2/3600*c.A_32*(u.*abs(u)); 
+    PipeResistance2= @(u) c.rf2/1000*c.A_32*(u.*abs(u)); 
     
     %Definine pipe resistance in the end with all flows: 
-    PipeResistanceTogether= @(u) c.rfTogether/3600*(abs(c.A_1*u-c.d).*abs(c.A_1*u-c.d)); 
+    PipeResistanceTogether= @(u) c.rfTogether/1000*(abs(c.A_1*u-c.d).*(c.A_1*u-c.d)); 
     
     
     
@@ -130,6 +154,7 @@ else
     Jl1= @(u) ones(1,c.Nc)*(c.e1*c.Je.*(c.A_31*u.*(PipeResistance1(u)+PipeResistanceTogether(u)+height1(u)))); 
     %Pump 2 
     Jl2= @(u) ones(1,c.Nc)*(c.e2*c.Je.*(c.A_32*u.*(PipeResistance2(u)+PipeResistanceTogether(u)+height2(u)))); 
+ options = optimoptions(@fmincon,'Algorithm','sqp');
 
 end 
 
