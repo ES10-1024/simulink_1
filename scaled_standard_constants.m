@@ -5,8 +5,8 @@ constants.TdMin1=0;
 constants.TdMin2=0;
 constants.TdMin3=0;
 
-constants.TdMax1=0.6; 
-constants.TdMax2=0.6;
+constants.TdMax1=10;%3.6; 
+constants.TdMax2=10;%3.6;
 %constants.TdMax3=400; 
 
 %Defining pressure before the pumps [Pa]: 
@@ -15,8 +15,8 @@ constants.p20=0;%101325;
 constants.p30=0;%101325;
 
 % Define max mass flow for each pump (m^3/h) 
-constants.umax1=0.05; 
-constants.umax2=0.05;
+constants.umax1=0.3;    %0.05; 
+constants.umax2=0.3;
 
 
 % Defining minimum mass flow for each pump (m^3/h)
@@ -76,19 +76,17 @@ constants.NoiseVariance=4;
 
 
 %Defining wired K in the cost function
-constants.K=800;
+constants.K=0; %800
 
 %Weight for the price term
 constants.Kp=1; 
 
-%Setting sampletime in hours
-constants.ts=1; 
+%Setting sampletime in seconds
+constants.ts=600;%1; 
 
-% Defining control horizion in hours 
-constants.Nc_hours = 24; %To Be Updated!
+
 
 % Defining control horizion in samples 
-%constants.Nc = constants.Nc_hours*3600/constants.ts; 
 constants.Nc = 24; 
 
 %Defining accelerated time (amount of accelered hour in one real world hour 

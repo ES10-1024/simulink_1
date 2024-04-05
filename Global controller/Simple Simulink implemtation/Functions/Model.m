@@ -9,10 +9,11 @@ function [Vp1] = Model(V,u,d)
 
 %% Define constant from the rapport
 c=scaled_standard_constants;
+
 %% Define the state space matrixs (from the report) 
 A=1; 
-Bu=ones(1,c.Nu)*c.ts; 
-Bd=ones(1,c.Nd)*c.ts;
+Bu=ones(1,c.Nu)*c.ts/3600; 
+Bd=ones(1,c.Nd)*c.ts/3600;
 
 %% Determine the next output corresponding to the output of the function 
 Vp1=A*V+Bu*u(1:c.Nu,1)-Bd*d(1,1);

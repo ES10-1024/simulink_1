@@ -1,4 +1,4 @@
-function [consumption,consumptionNoise] = consumption(currentTime,usedAccTime)
+function [consumption,consumptionNoise] = consumption(currentTime)
 % Here it is desired to make a model for the consumption for the entire controller horizion, given the current time and control horizion. 
 %The input is: 
 %currentTime: the currentTime
@@ -7,18 +7,13 @@ function [consumption,consumptionNoise] = consumption(currentTime,usedAccTime)
 %Importing constant valus: 
 c=scaled_standard_constants();
 %The time between samples 
-TimeBetweenSamples=(3600*c.ts)/4;
+TimeBetweenSamples=600;
 
-% Definig the amount of seconds per day 
-SecondsPerDay=24*3600;
-
-%Defining amount of seconds per week 
-SecondsPerWeek=24*3600*7;
 %% Checking if the given sample time is dividable with the sample time for the measurements of demand!
   % Define size: 
     consumption=zeros(c.Nc,1); 
     consumptionNoise=zeros(c.Nc,1);
-if floor((c.ts*3600)/TimeBetweenSamples)==(c.ts*3600)/TimeBetweenSamples 
+if floor((c.ts)/TimeBetweenSamples)==(c.ts)/TimeBetweenSamples 
 else
     disp("CAN NOT WORK WITH THE GIVEN SAMPLE TIME PLZ CHANGE IT");
    
@@ -27,10 +22,10 @@ end
 
 
 %% Loading in the data needed for the consumption model
-std_week=load('prediction_scaled.mat'); 
+std_week=load('prediction_scaled2.mat'); 
 std_week=std_week.scaled_prediction';
 
-demand_data=load('consumption_scaled.mat'); 
+demand_data=load('consumption_scaled2.mat'); 
 
 demand_data=demand_data.scaled_consumption;
 
@@ -38,8 +33,8 @@ demand_data=demand_data.scaled_consumption;
 %First the changes in sample is added for instance going 
 % from 15 mins sample to one hour and the average is taken 
 
-%Determine the changes in samples
-samplesChanges=(c.ts*3600)/TimeBetweenSamples; 
+%Determine amount of samples needs for one sample time for the MPC
+samplesChanges=3600/TimeBetweenSamples; 
 
 %adding those sample together
 index=1;  
@@ -64,11 +59,8 @@ NewDemand_data=NewDemand_data/samplesChanges;
 
 %% Determining consumption model
 %First the start position is determinted in regard to time of week. 
-if usedAccTime == true 
-    StartPosition=(currentTime*c.AccTime);%-(floor((currentTime*c.AccTime)/(SecondsPerWeek))*SecondsPerWeek);
-else 
-    StartPosition=(currentTime);%-(floor((currentTime)/(SecondsPerWeek))*SecondsPerWeek);
-end 
+StartPosition=(currentTime*c.AccTime);
+
 StartPosition=round(StartPosition)/3600+1;
 %The consumption with noise is not weekly wrap around and can therefore be set: 
 consumptionNoise=NewDemand_data(StartPosition:StartPosition+c.Nc-1,1); 
