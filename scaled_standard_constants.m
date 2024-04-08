@@ -51,7 +51,7 @@ constants.rf1=0.35*10^5;%0.3*10^5;
 constants.rf2=0.42*10^5;%0.1*10^5; 
 
 %Defining ressistance after 
-constants.rfTogether = 0.3*10^5; 
+constants.rfTogether = 0.29*10^5; 
 
 % Defining pipe elevation In meters
 constants.z1=2; 
@@ -96,6 +96,10 @@ constants.AccTime=6;
 constants.iteration=80;
 
 constants.rho=150;
+%% If the cost function should be scaled: 
+constants.scaled=true; 
+%% If disturbance with regard to demand should be utilized: 
+constants.disturbance=false; 
 %% SMPC varaibles 
   %% Constraints   
 %Defining the primenumber for the finith field 

@@ -8,7 +8,7 @@ clear
 addpath("Global controller\Simple Simulink implemtation\Functions\")
 c=scaled_standard_constants; 
 %% 
-simHour=48; 
+simHour=24*10; 
 simTime=simHour/c.AccTime*3600; 
 
 
@@ -37,7 +37,7 @@ hold off
 ylabel('Volume [m^{3}]')
 xlabel('Samples [*]')
 grid on
-xlim([0 49])
+%xlim([0 49])
 legend('Simulink Volume','Matlab Volume','Constraints')
 %% Plotting the input for the two different setups 
 f=figure
