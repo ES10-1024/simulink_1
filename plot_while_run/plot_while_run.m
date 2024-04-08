@@ -2,12 +2,14 @@ close
 clear 
 
 %folder = 'C:\Users\laula\OneDrive - Aalborg Universitet\10. semester\Log_files\Consensus_ADMM_test_2'
-folder = 'C:\Users\laula\OneDrive - Aalborg Universitet\10. semester\Log_files\Consensus_ADMM_test_2'
-ADMM_consensus = true;
+%folder = 'C:\Users\laula\OneDrive - Aalborg Universitet\10. semester\Log_files\Consensus_ADMM_test_2'
+folder= 'C:\Users\pppc\Desktop\es1024_2023_git2\log'
+
+ADMM_consensus = false;
 load(folder+"\controller.mat");
-
-ctrl.actuation.Data = ctrl.actuation.Data/6;     %Fix position of divsion, BE CAREFUL
-
+ 
+%ctrl.actuation.Data = ctrl.actuation.Data/6;     %Fix position of divsion, BE CAREFUL
+ 
 load(folder+"\pipe20.mat");
 load(folder+"\consumer32.mat");
 load(folder+"\consumption_ref.mat");
