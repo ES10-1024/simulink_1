@@ -97,7 +97,7 @@ constants.iteration=150;
 
 constants.rho=3;
 %% If the cost function should be scaled: 
-constants.scaled=false; 
+constants.scaled=true; 
 %% If disturbance with regard to demand should be utilized: 
 constants.disturbance=true;
 %% If the electricity price should be scaled 
