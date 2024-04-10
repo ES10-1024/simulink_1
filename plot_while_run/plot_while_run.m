@@ -2,7 +2,7 @@ close
 clear 
 
 %folder = 'C:\Users\laula\OneDrive - Aalborg Universitet\10. semester\Log_files\Consensus_ADMM_test_2'
-folder = 'C:\Users\laula\OneDrive - Aalborg Universitet\10. semester\Log_files\Consensus_ADMM_test_2'
+folder = 'C:\Users\is123\Downloads\Global_controller_new_test'
 ADMM_consensus = true;
 load(folder+"\controller.mat");
 

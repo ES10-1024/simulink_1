@@ -76,7 +76,7 @@ constants.NoiseVariance=4;
 
 
 %Defining wired K in the cost function
-constants.K=0; %800
+constants.K=0;%0.2; %800
 
 %Weight for the price term
 constants.Kp=1; 
@@ -93,13 +93,16 @@ constants.Nc = 24;
 constants.AccTime=6; 
 %% Variables defining for the consensus algortime 
 %Defining amount of iteration that the consensus ADMM should do 
-constants.iteration=80;
+constants.iteration=150;
 
-constants.rho=150;
+constants.rho=3;
 %% If the cost function should be scaled: 
-constants.scaled=true; 
+constants.scaled=false; 
 %% If disturbance with regard to demand should be utilized: 
-constants.disturbance=false; 
+constants.disturbance=true;
+%% If the electricity price should be scaled 
+constants.scaledEletricityPrice=true;
+
 %% SMPC varaibles 
   %% Constraints   
 %Defining the primenumber for the finith field 
