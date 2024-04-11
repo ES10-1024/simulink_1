@@ -39,18 +39,15 @@ total=c.Nc*c.Nu;
  %options = [];
  options = optimoptions(@fmincon,'Algorithm','sqp');
 
- %options = optimoptions(@fmincon,'Algorithm','interior-point');
-
- %options = optimoptions(@fmincon,'MaxFunctionEvaluations',3e3);
 
 
 %% Water level in water tower (need for the cost functions)
-    h=@(u) c.g0*c.rhoW*1/c.At*(c.A_2*(c.A_1*u(1:total,1)-c.d)+c.V);
+ h=@(u) 1/c.At*(c.A_2*(c.A_1*c.ts*u/3600-c.ts*c.d/3600)+c.V);
 
-        A.extract = c.v2';  
-        B.extract = c.TdMax2;
-        A.pumpU = c.A_32; 
-        B.pumpU = ones(c.Nc,1)*c.umax2; 
+        A.extract = c.v1'*c.ts/3600;  
+        B.extract = c.TdMax1;
+        A.pumpU = c.A_31; 
+        B.pumpU = ones(c.Nc,1)*c.umax1; 
         A.pumpL = -eye(total);
         B.pumpL = zeros(total,1);
 
@@ -59,20 +56,26 @@ total=c.Nc*c.Nu;
         BB=[B.extract;B.pumpU;B.pumpL];
 
         %Defining the cost function
-        J_l = @(u) ones(1,c.Nc)*(c.e2*c.Je.*(c.A_32*(u.*u.*abs(u)*(c.rf2/1000) + u*c.g0*c.rhoW*(c.z2/1000))+(c.A_32*u).*(h(u)/1000)+c.A_32*u.*((c.rfTogether/1000)*abs(c.A_1*u-c.d).*abs(c.A_1*u-c.d))));
+
+                height2=@(u) c.g0*c.rhoW/10000*(h(u)+c.z2);
+                PipeResistance2= @(u) c.rf2/10000*c.A_32*(u.*abs(u)); 
+                PipeResistanceTogether= @(u)c.rfTogether/10000*(abs(c.A_1*u-c.d).*(c.A_1*u-c.d)); 
+                J_l= @(u) ones(1,c.Nc)*(c.e2*c.Je.*(c.A_32*u.*(PipeResistance2(u)+PipeResistanceTogether(u)+height2(u))));
+
+ 
      %% Cost function definition
 
     %Defining the part of the cost function which is in regard to the ADMM consensus
     %algortime 
-    J_con_z = @(u) lambda'*(u(1:total,1)-z)+c.rho/2*((u(1:total,1)-z)'*(u(1:total,1)-z));
+    J_con_z = @(u) lambda'*(u-z)+c.rho/2*((u-z)'*(u-z));
 
 
 
     %Defining that the amount of water in the tower in the start and end
     %has to be the same 
-    Js= @(u) c.K*(ones(1,c.Nc)*(c.A_1*u(1:total,1)-c.d))^2;
+    Js= @(u) c.K/3*(c.ts*ones(1,c.Nc)*(c.A_1*u/3600-c.d/3600))^2;
     %Defining cost function 
-     costFunction=@(u) (J_l(u)+Js(u)+J_con_z(u));
+    costFunction=@(u) (J_l(u)+Js(u)+J_con_z(u));
 
 
         %Initial guess
