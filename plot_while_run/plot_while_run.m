@@ -2,12 +2,14 @@ close
 clear 
 
 %folder = 'C:\Users\laula\OneDrive - Aalborg Universitet\10. semester\Log_files\Consensus_ADMM_test_2'
-folder = 'C:\Users\is123\Downloads\Global_controller_new_test'
-ADMM_consensus = true;
+%folder = 'C:\Users\laula\OneDrive - Aalborg Universitet\10. semester\Log_files\Consensus_ADMM_test_2'
+folder= 'C:\Users\pppc\Desktop\es1024_2023_git2\log'
+
+ADMM_consensus = false;
 load(folder+"\controller.mat");
-
-ctrl.actuation.Data = ctrl.actuation.Data/6;     %Fix position of divsion, BE CAREFUL
-
+ 
+%ctrl.actuation.Data = ctrl.actuation.Data/6;     %Fix position of divsion, BE CAREFUL
+ 
 load(folder+"\pipe20.mat");
 load(folder+"\consumer32.mat");
 load(folder+"\consumption_ref.mat");
@@ -58,7 +60,7 @@ for l=100:600:con32.p11_32.Time(end)
     %Past flow
     sum_flow_past = pipe20.q3_20 + pipe20.q4_20;
     sum_flow_past = getsampleusingtime(sum_flow_past,0,current_time);
-    plot(sum_flow_past.Time/3600*6, movmean(squeeze(sum_flow_past.Data)/6,600))
+    plot(sum_flow_past.Time/3600*6, movmean(squeeze(sum_flow_past.Data),600))
     %Past comanded
     if(ADMM_consensus==true)
         sum_flow_commanded = squeeze(ctrl.actuation.Data(1:k,1) + ctrl.actuation.Data(1:k,2));
@@ -74,7 +76,7 @@ for l=100:600:con32.p11_32.Time(end)
     xlabel('Time [h_s]')
     grid
     xlim([0 length(ctrl.mathcal_U.Data)])
-    ylim([0 0.1])
+    ylim([0 0.6])
     
     subplot(2,2,3)
     %Volume in tower
@@ -85,7 +87,7 @@ for l=100:600:con32.p11_32.Time(end)
     %tower_volume(1) = getsampleusingtime(ctrl.volume, time_last_control+1).Data*1000
     tower_volume(1) = interp1(ctrl.volume.Time, squeeze(ctrl.volume.Data) ,time_last_control+1, 'nearest')*1000;
     for i=2:25
-        tower_volume(i) = tower_volume(i-1) + sum_flow_prediction(i-1)*1000 -ctrl.Preducted_demand_vector.Data(i-1,:,k)*1000;
+        tower_volume(i) = tower_volume(i-1) + sum_flow_prediction(i-1)*1000*600/3600 -ctrl.Preducted_demand_vector.Data(i-1,:,k)*1000*600/3600;
     end
     time_tower_volume = k-1:24+k-1;
     plot(time_tower_volume,tower_volume)
@@ -108,7 +110,7 @@ for l=100:600:con32.p11_32.Time(end)
     %Demand past
     sum_consumption = con32.q_32_v1 + con32.q_32_v2;
     sum_consumption = getsampleusingtime(sum_consumption,0,current_time);
-    plot(sum_consumption.Time/3600*6,movmean(squeeze(sum_consumption.Data)/6,100))
+    plot(sum_consumption.Time/3600*6,movmean(squeeze(sum_consumption.Data),100))
     %Demand commanded
     stairs(con_ref.Time(1:k)/3600*6,squeeze(con_ref.Data(1:k)))
     
@@ -117,7 +119,7 @@ for l=100:600:con32.p11_32.Time(end)
     grid
     legend("Prediction", "Measured", "Commanded")
     xlim([0 length(ctrl.mathcal_U.Data)])
-    ylim([0 0.1])
+    ylim([0 0.6])
 
     fontname(f,"Times")
     drawnow

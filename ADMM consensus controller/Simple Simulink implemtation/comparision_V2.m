@@ -5,7 +5,7 @@ close all
 %Loading in the simulation results 
 globalCon=load("200_hours_global_scaled.mat");
 
-consensusCon=load("200_hours_new_simulation.mat"); 
+consensusCon=load("200_hours_consensus_with_kappa.mat"); 
 %consensusCon=load("short_ADMM_consensus_test.mat");
 c=scaled_standard_constants;
 %% 
@@ -26,8 +26,35 @@ consensusCon.consumptionPred=squeeze(consensusCon.out.logsout{4}.Values.Data(1,1
 
 globalCon.Volume=globalCon.simData.logsout{3}.Values.Data/1000*c.At; 
 consensusCon.Volume=consensusCon.out.logsout{17}.Values.Data(2:end,1);
+%% Determine the electricity bill: 
+for index1=2:size(consensusCon.out.logsout{14}.Values.Data,1)
+    index=1; 
+    for i=1:c.Nu*c.Nc
+        consensusCon.uAll(i,index1)=consensusCon.out.logsout{13}.Values.Data(i,index,index1);
+        index=index+1; 
+        if index==3 
+            index=1; 
+        end 
+    end 
+end 
 
-subplot(3,1,1)
+for index=2:size(globalCon.simData.logsout{1}.Values.Data,3) 
+    c.d=globalCon.simData.logsout{4}.Values.Data(:,:,index);
+    if index==2 
+        [globalCon.Bill(index-1,1), ~]= eletrictyBill(globalCon.simData.logsout{2}.Values.Data(index,:)',globalCon.simData.logsout{6}.Values.Data(:,:,index),c,globalCon.Volume(index-1,1));
+        [consensusCon.Bill(index-1,1), ~]= eletrictyBill(consensusCon.uAll(:,index),globalCon.simData.logsout{6}.Values.Data(:,:,index),c,consensusCon.Volume(index-1,1));
+        procentEldiff(index-1,1)=(globalCon.Bill(index-1,1)-consensusCon.Bill(index-1,1))/globalCon.Bill(index-1,1)*100;
+    else 
+       [globalCon.Bill(index-1,1), ~] = eletrictyBill(globalCon.simData.logsout{2}.Values.Data(index,:)',globalCon.simData.logsout{6}.Values.Data(:,:,index),c,globalCon.Volume(index-1,1));
+      globalCon.Bill(index-1,1)=globalCon.Bill(index-1,1)+globalCon.Bill(index-2,1);
+       [consensusCon.Bill(index-1,1), ~]= eletrictyBill(consensusCon.uAll(:,index),globalCon.simData.logsout{6}.Values.Data(:,:,index),c,consensusCon.Volume(index-1,1));
+        consensusCon.Bill(index-1,1)=consensusCon.Bill(index-1,1)+consensusCon.Bill(index-2,1);
+       procentEldiff(index-1,1)=(globalCon.Bill(index-1,1)-consensusCon.Bill(index-1,1))/globalCon.Bill(index-1,1)*100;
+    end 
+end 
+%% Making the plot 
+f=figure
+subplot(5,1,1)
 hold on
 ylabel('Mass flow [m^{3}/h]' )
 hold on 
@@ -46,7 +73,7 @@ hold off
 set(gca,'fontname','times')
 
 
-subplot(3,1,2) 
+subplot(5,1,2) 
 hold on 
 plot(globalCon.Volume)
 plot(consensusCon.Volume)
@@ -61,7 +88,7 @@ xlabel('Hours scaled')
 set(gca,'fontname','times')
 
 
-subplot(3,1,3)
+subplot(5,1,3)
 hold on 
 stairs(globalCon.consumptionPred)
 stairs(consumptionNoise)
@@ -73,41 +100,33 @@ ylabel('Mass flow [m^{3}/h]' )
 xlabel('Hours scaled') 
 set(gca,'fontname','times')
 
-
-%% Determine the electricity bill: 
-for index1=2:size(consensusCon.out.logsout{14}.Values.Data,1)
-    index=1; 
-    for i=1:c.Nu*c.Nc
-        consensusCon.uAll(i,index1)=consensusCon.out.logsout{13}.Values.Data(i,index,index1);
-        index=index+1; 
-        if index==3 
-            index=1; 
-        end 
-    end 
-end 
-
-for index=2:size(globalCon.simData.logsout{1}.Values.Data,3) 
-    c.d=globalCon.simData.logsout{4}.Values.Data(:,:,index);
-    if index==2 
-        [globalCon.Bill(index-1,1), ~]= eletrictyBill(globalCon.simData.logsout{2}.Values.Data(index,:)',globalCon.simData.logsout{6}.Values.Data(:,:,index),c,globalCon.Volume(index-1,1));
-        [consensusCon.Bill(index-1,1), ~]= eletrictyBill(consensusCon.uAll(:,index),globalCon.simData.logsout{6}.Values.Data(:,:,index),c,consensusCon.Volume(index-1,1));
-    else 
-       [globalCon.Bill(index-1,1), ~] = eletrictyBill(globalCon.simData.logsout{2}.Values.Data(index,:)',globalCon.simData.logsout{6}.Values.Data(:,:,index),c,globalCon.Volume(index-1,1));
-      globalCon.Bill(index-1,1)=globalCon.Bill(index-1,1)+globalCon.Bill(index-2,1);
-       [consensusCon.Bill(index-1,1), ~]= eletrictyBill(consensusCon.uAll(:,index),globalCon.simData.logsout{6}.Values.Data(:,:,index),c,consensusCon.Volume(index-1,1));
-        consensusCon.Bill(index-1,1)=consensusCon.Bill(index-1,1)+consensusCon.Bill(index-2,1);
-    end 
-end 
-%%  Plotting the electricity bill: 
+subplot(5,1,4) 
 hold on 
 plot(globalCon.Bill)
 plot(consensusCon.Bill)
 hold off 
 legend('Global','Consensus')
 grid 
-
 xlabel('Scaled hours') 
-ylabel('Electricity Bill [Euro]') 
+ylabel('El Bill [Euro]') 
+set(gca,'fontname','times')
+
+
+subplot(5,1,5) 
+hold on 
+plot(procentEldiff)
+yline(0)
+hold off
+grid 
+xlabel('Scaled hours') 
+ylabel('Pro diff el bill')
+
+set(gca,'fontname','times')
+exportgraphics(f,'consensus_vs_global_simulated.pdf')
+
+
+
+
 
 %% 
 disp("Electricity bill difference is") 
