@@ -9,7 +9,7 @@ close all
 addpath("Global controller\Simple Simulink implemtation\Functions\")
 c=scaled_standard_constants; 
 %% 
-simHour=200; 
+simHour=1001; 
 simTime=simHour/c.AccTime*3600; 
 
 
