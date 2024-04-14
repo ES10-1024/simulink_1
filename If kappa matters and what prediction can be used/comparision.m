@@ -28,6 +28,7 @@ globalCon.Volume=globalCon.simData.logsout{3}.Values.Data/1000*c.At;
 Kap0Nc24.Volume=Kap0Nc24.simData.logsout{3}.Values.Data/1000*c.At; 
 
 %% Making plots 
+f=figure
 hold on
 ylabel('Mass flow [m^{3}/h]' )
 hold on 
@@ -35,12 +36,35 @@ stairs(globalCon.summedMassflow)
 stairs(Kap0Nc24.summedMassflow)
 hold off 
 grid 
+xlabel('Hours') 
 
 
-%% 
+%% Plotting difference in inputs
+FrontSize=16;
+
+f=figure 
 plot(globalCon.summedMassflow-Kap0Nc24.summedMassflow)
+ylabel('Used input diff 24 and 16 h [m^{3}/h]','FontSize',FrontSize)
+xlabel('Time [h]','FontSize',FrontSize) 
+grid 
+set(gca,'fontname','times')
+exportgraphics(f,'24h_vs_16h_input_value.pdf')
+
+%% Difference in water volume
+f=figure 
+hold on 
+plot(globalCon.Volume-Kap0Nc24.Volume) 
+hold off 
+grid 
+xlabel('Time [h]','FontSize',FrontSize) 
+ylabel('Water volume diff 24 and 16 h [m^{3}]','FontSize',FrontSize)
+set(gca,'fontname','times')
+xlim([1 200])
+
+exportgraphics(f,'24h_vs_16h_water_volume.pdf')
 
 
+%%
 % %% Determine the electricity bill: 
 % 
 % 
