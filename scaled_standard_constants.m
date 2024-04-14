@@ -76,7 +76,7 @@ constants.NoiseVariance=4;
 
 
 %Defining wired K in the cost function
-constants.K=0; %450; %800
+constants.K=450; %450; %800
 
 %Weight for the price term
 constants.Kp=1; 
@@ -101,7 +101,7 @@ constants.scaled=true;
 %% If disturbance with regard to demand should be utilized: 
 constants.disturbance=true;
 %% If the electricity price should be scaled 
-constants.scaledEletricityPrice=false;
+constants.scaledEletricityPrice=true;
 %% Define if it is allowed to vary rho if it is the case how many iterations 
 constants.varying_rho=true; 
 constants.varying_rho_iterations_numbers=10; 
