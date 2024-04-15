@@ -43,8 +43,8 @@ for l=con32.p11_32.Time(end)%600:100:con32.p11_32.Time(end)
     ylabel('Electricty price [EUR/kWh]')
     xlabel('Time [h]')
     grid 
-    xlim([0 150])
-    %xlim([0 length(ctrl.mathcal_U.Data)])    
+    %xlim([0 150])
+    xlim([0 length(ctrl.mathcal_U.Data)])    
     ylim([0 0.2])
 
     title('Eletricity price')
@@ -84,8 +84,8 @@ for l=con32.p11_32.Time(end)%600:100:con32.p11_32.Time(end)
     
     ylabel('Sum of flow [m^3/h_s]')
     grid
-    xlim([1 150])
-    %xlim([0 length(ctrl.mathcal_U.Data)])
+    %xlim([1 150])
+    xlim([0 length(ctrl.mathcal_U.Data)])
     ylim([0 0.6])
     title("Summed Acutation [m^3/h_s]")
 
@@ -114,8 +114,8 @@ for l=con32.p11_32.Time(end)%600:100:con32.p11_32.Time(end)
     yline(155)
     ylabel("Volume in tower [L]")
     grid
-    xlim([1 150])
-    %xlim([0 length(ctrl.mathcal_U.Data)])
+    %xlim([1 150])
+    xlim([0 length(ctrl.mathcal_U.Data)])
     
     ylim([20 170])
     title("Volume in Tower [L]")
@@ -144,9 +144,9 @@ for l=con32.p11_32.Time(end)%600:100:con32.p11_32.Time(end)
     grid
     %legend("Prediction", "Commanded" , "Realized")
     legend("Commanded Simulation" , "Realized global")
-    xlim([1 150])
+    %xlim([1 150])
 
-    %xlim([0 length(ctrl.mathcal_U.Data)])
+    xlim([0 length(ctrl.mathcal_U.Data)])
     ylim([0 0.1])
         title('Consumption')
 
