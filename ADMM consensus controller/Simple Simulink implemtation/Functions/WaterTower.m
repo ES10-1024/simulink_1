@@ -1,4 +1,4 @@
-function u_hat = WaterTower(lambda, data, z,x)
+function u_hat = WaterTower(lambda, data, z,x,rhoValue)
 % Making the consensus problem for each of the pumps stations  where n_unit
 % describes which of the pumps the problem is solved for. 
 %Lambda= Lagrangian mulptipler 
@@ -13,6 +13,8 @@ c=scaled_standard_constants;
 c.Je=data.Je; 
 c.d=data.d;
 c.V=data.V; 
+c.rho=rhoValue; 
+
 
 
 c.A_1=data.A_1; 

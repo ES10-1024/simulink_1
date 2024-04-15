@@ -87,7 +87,7 @@ constants.ts=600;%1;
 
 
 % Defining control horizion in samples 
-constants.Nc = 24; 
+constants.Nc =24; %24; 
 
 %Defining accelerated time (amount of accelered hour in one real world hour 
 constants.AccTime=6; 
@@ -95,13 +95,19 @@ constants.AccTime=6;
 %Defining amount of iteration that the consensus ADMM should do 
 constants.iteration=150;
 
-constants.rho=3;
+constants.rho=1; %3 works well as a fixed value
 %% If the cost function should be scaled: 
 constants.scaled=true; 
 %% If disturbance with regard to demand should be utilized: 
 constants.disturbance=true;
 %% If the electricity price should be scaled 
 constants.scaledEletricityPrice=true;
+%% Define if it is allowed to vary rho if it is the case how many iterations 
+constants.varying_rho=true; 
+constants.varying_rho_iterations_numbers=10; 
+constants.mu=10;  %10
+constants.tauIncr=2;%1.5; %2; 
+constants.tauDecr=2;%1.5; %2;
 
 %% SMPC varaibles 
   %% Constraints   
