@@ -76,7 +76,7 @@ constants.NoiseVariance=4;
 
 
 %Defining wired K in the cost function
-constants.K=450;% 450; %450; %800
+constants.K=550;% 450; %450; %800
 
 %Weight for the price term
 constants.Kp=1; 
@@ -113,7 +113,7 @@ constants.tauDecr=2;%1.5; %2;
   %% Constraints   
 %Defining the primenumber for the finith field 
 %constants.prime=15000017; 
-constants.prime=150001; 
+constants.prime=10000019;   %150001; 
 
 % Defining scaling factor 
 %constants.scaling=100000; 
