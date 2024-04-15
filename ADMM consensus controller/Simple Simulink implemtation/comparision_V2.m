@@ -12,7 +12,9 @@ globalCon=load("1000_hours_global_control_NC24_K450");
 %consensusCon=load("varying_rho_200_hours_el_scaled_rho_start1_mu=10_tau=2_K=0_Nc=16.mat");
 %consensusCon=load("varying_rho_200_hours_el_scaled_rho_start1_mu=10_tau=2_K=0_Nc=16.mat");
 
-consensusCon=load("1000_hours_consensus_varying_rho_el_scaled_NC24_K450_mu_10_tau1_5.mat");
+%short_test.mat
+%consensusCon=load("1000_hours_consensus_varying_rho_el_scaled_NC24_K450_mu_10_tau1_5.mat");
+consensusCon=load("short_test.mat");
 
 
 %consensusCon=load("1000_hours_consensus_varying_rho_el_scaled_NC24_K450_mu_10_K2.mat");

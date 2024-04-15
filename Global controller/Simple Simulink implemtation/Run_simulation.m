@@ -9,7 +9,7 @@ close all
 addpath("Global controller\Simple Simulink implemtation\Functions\")
 c=scaled_standard_constants; 
 %% 
-simHour=601; 
+simHour=72; 
 simTime=simHour/c.AccTime*3600; 
 
 
@@ -38,6 +38,7 @@ f=figure
 
 subplot(3,1,1)
 hold on
+yyaxis left
 ylabel('Mass flow [m^{3}/h]' )
 stairs(summedMassflow) 
 yyaxis right 
@@ -46,7 +47,7 @@ stairs(ElPrices)
 xlabel('Hours scaled') 
 grid 
 
-legend('Summed pump mass flow','Eletricity prices') 
+%legend('Summed pump mass flow','Eletricity prices') 
 xlim([0 72])
 hold off 
 set(gca,'fontname','times')
@@ -81,7 +82,7 @@ set(gca,'fontname','times')
 
 
 
-exportgraphics(f,'global_controller_not_scaled_with_disturbance.pdf')
+exportgraphics(f,'global_controller_scaled_with_disturbance_with_Kappa.pdf')
 
 
 %% 

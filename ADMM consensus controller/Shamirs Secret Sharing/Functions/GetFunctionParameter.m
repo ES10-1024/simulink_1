@@ -1,4 +1,5 @@
 function [a] = GetFunctionParameter(summed)
+%c=scaled_standard_constants;
 %Determine the polynium values
 a=zeros(size(summed,2),1);
 %Inverse of the x matrix used to determine the values for the polyniums in
@@ -10,6 +11,7 @@ for index=1:size(summed,2)
     
     %Making it finith
     a(index,1)=FinithFields(a(index,1)); 
+    %a=(a)/c.scaling-((c.Nu+1)*c.sMPCOffset); 
 end 
 
 end
