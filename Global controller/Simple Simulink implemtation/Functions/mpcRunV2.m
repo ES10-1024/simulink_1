@@ -10,6 +10,7 @@ function [up1,uAll] = mpcRunV2(data,uPrev,scaled)
 %The output is: 
 %up1, the input which should be set on the pumps 
 %uAll, all mass flow in the entire control horizon 
+%%
 %% loading in scaled_standard_constants, and moving the data a bit around to 
 % make it easier. 
 c=scaled_standard_constants; 
@@ -126,14 +127,14 @@ if scaled == false
 
 else 
     %Defining part which is about the elevation and water height: 
-    height1=@(u) c.A_31*u.*(c.g0*c.rhoW/10000*(h(u)+c.z1));
+    height1=@(u) c.A_31*u.*(c.g0*c.rhoW/c.condScaling*(h(u)+c.z1));
     
-    height2=@(u) c.A_32*u.*(c.g0*c.rhoW/10000*(h(u)+c.z2)); 
+    height2=@(u) c.A_32*u.*(c.g0*c.rhoW/c.condScaling*(h(u)+c.z2)); 
     
     %Defining  part due to pipe resitance which is separated: 
-    PipeResistance1= @(u) c.rf1/10000*c.A_31*(u.*abs(u).*abs(u)); 
+    PipeResistance1= @(u) c.rf1/c.condScaling*c.A_31*(u.*abs(u).*abs(u)); 
     
-    PipeResistance2= @(u) c.rf2/10000*c.A_32*(u.*abs(u).*abs(u)); 
+    PipeResistance2= @(u) c.rf2/c.condScaling*c.A_32*(u.*abs(u).*abs(u)); 
     
     %Definine pipe resistance with both flows presented: 
     PipeResistanceTogether1= @(u) c.A_31*u.*(c.rfTogether/10000*(abs(c.A_1*u-c.d).*(c.A_1*u-c.d))); 
