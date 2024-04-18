@@ -1,43 +1,31 @@
 function [Finith] = FinithFields(NotFinith)
-%FINITH_FIELDS Making a number fit in the finith field 
-%Loading standardConstants to get the prime number 
-%Finith=zeros(size(NotFinith,1),1);
-Finith=0; 
-NotFinith=NotFinith(1,1); 
+%FINITH FIELDS Making a number fit in the finith field 
+%Input NotFinith is not within the fintih field, whereas the out Finith is
+%within the finith field 
+
+%Defining the output size because Simulink needs 
+Finith=zeros(size(NotFinith,1),size(NotFinith,2)); 
+
+%Loading in scaled standard constants 
 c=scaled_standard_constants;
  
-while  c.prime-1<NotFinith(1,1)
-            NotFinith(1,1)=NotFinith(1,1)-c.prime; 
+%Going though each entire, in the vector, if the value is above the max,
+%the prime number is subscracted until it fits. If the value is below the
+%minimum value, the prime number is add until non neagtive value is reached
+%
+for index=1:size(NotFinith,1)
+    while  c.prime-1<NotFinith(index,1)
+                NotFinith(index,1)=NotFinith(index,1)-c.prime; 
+               
+    end 
+    
+    while NotFinith(index,1)<=0
+            NotFinith(index,1)=NotFinith(index,1)+c.prime;
            
+    end 
 end 
 
-while NotFinith(1,1)<0
-        NotFinith(1,1)=NotFinith(1,1)+c.prime;
-       
-end 
-Finith(1,1)=NotFinith(1,1); 
-
-% 
-% for index=1:size(Finith,1) 
-%     %If within the finit do nothing
-%     if 0<=NotFinith(index,1) && NotFinith(index,1)<=c.prime-1
-%         Finith(index,1)=NotFinith(index,1); 
-%         %If above the fininth field of prime-1, substract the finith field
-%         %value
-%     elseif  c.prime-1<NotFinith(index,1)
-%         while  c.prime-1<NotFinith(index,1)
-%             NotFinith(index,1)=NotFinith(index,1)-c.prime; 
-%         end 
-%         Finith(index,1)=NotFinith(index,1); 
-%         %If below 0 added the prime value such it becomes with the finith
-%         %field
-%     else
-%         while NotFinith(index,1)<0
-%             NotFinith(index,1)=NotFinith(index,1)+c.prime;
-%         end 
-%         Finith(index,1)=NotFinith(index,1); 
-%     end 
-% end 
+Finith=NotFinith; 
 
 end
 

@@ -30,7 +30,11 @@ end
 
 % Getting the electricity prices, actual consumption, prediction horizion
 % and the volume in the water tower 
-ElPrices=squeeze(simData.logsout{6}.Values.Data(1,1,2:end));
+for index=2:size(simData.logsout{14}.Values.Data,1)
+    [temp]=ElectrictyPrices(index*c.ts); 
+    ElPrices(index-1)=temp(1,1);
+end 
+
 
 consumptionNoise=simData.logsout{5}.Values.Data(2:end,1); 
 

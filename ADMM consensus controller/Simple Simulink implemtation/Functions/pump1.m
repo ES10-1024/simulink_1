@@ -10,7 +10,7 @@ function u_hat = pump1(lambda, data, z,x,rhoValue)
 %u_hat returns the solution for the given pump 
 %% loading in scaled standard constants 
 c=scaled_standard_constants; 
-%Moving data for eletricity price and demand: 
+%Moving data for eletricity price, demand and matrix needed to solve the problem: 
 c.Je=data.Je; 
 c.d=data.d;
 c.V=data.V; 
@@ -37,9 +37,6 @@ total=c.Nc*c.Nu;
  ub=[];
  nonlcon=[];
 
- %If it desired to change the settings for the solver, use the one listed
- %below: 
- %options = [];
  options = optimoptions(@fmincon,'Algorithm','sqp');
 
 
@@ -75,7 +72,7 @@ total=c.Nc*c.Nu;
 
         %Defining that the amount of water in the tower in the start and end
         %has to be the same 
-        Js= @(u) c.K/2*(c.ts*ones(1,c.Nc)*(c.A_1*u/3600-c.d/3600))^2;
+        Js= @(u) c.K/3*(c.ts*ones(1,c.Nc)*(c.A_1*u/3600-c.d/3600))^2;
         %Collecting into one cost function
         costFunction=@(u) Js(u)+Jp(u); 
 

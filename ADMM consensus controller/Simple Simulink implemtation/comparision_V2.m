@@ -1,50 +1,47 @@
+%% In this script simulated result from the global and consensus ADMM controller is compared 
+%% Making a bit of cleaning 
 clear 
 clf 
 clc
 close all 
-%Loading in the simulation results 
+
+%% Loading in the simulated results 
+
+%Loading in the simulation results for the global controller
 globalCon=load("1000_hours_global_control_NC24_K450");
 
-%globalCon=load("200_hours_global_with_no_kappa_no_el_scaled_Nc=16.mat");
-%globalCon=load("200_hours_global_with_kappa_no_el_scaled.mat");
-
-
-%consensusCon=load("varying_rho_200_hours_el_scaled_rho_start1_mu=10_tau=2_K=0_Nc=16.mat");
-%consensusCon=load("varying_rho_200_hours_el_scaled_rho_start1_mu=10_tau=2_K=0_Nc=16.mat");
-
-%short_test.mat
-%consensusCon=load("1000_hours_consensus_varying_rho_el_scaled_NC24_K450_mu_10_tau1_5.mat");
+%Loading in the simulation result for the consensus controller 
 consensusCon=load("short_test.mat");
-
-
-%consensusCon=load("1000_hours_consensus_varying_rho_el_scaled_NC24_K450_mu_10_K2.mat");
-
-
-%consensusCon=load("200_hours_consensus_with_kappa.mat"); 
-%consensusCon=load("short_ADMM_consensus_test.mat");
 c=scaled_standard_constants;
+
+%% Doing a bit more cleaning 
 clf 
 clc
 close all 
-%% 
-
-
+%% Picking out a few things which is needed for the comparision: 
+%Summing the mass flows at each time step  [m^3/h]
 for index=2:size(consensusCon.out.logsout{14}.Values.Data,1)-1
     globalCon.summedMassflow(index-1,1)=globalCon.simData.logsout{1}.Values.Data(1,1,index)+globalCon.simData.logsout{1}.Values.Data(2,1,index);
     consensusCon.summedMassflow(index-1,1)=consensusCon.out.logsout{14}.Values.Data(index,1)+consensusCon.out.logsout{15}.Values.Data(index,1);
 end 
 
+%Picking out the eletricity prices 
 globalCon.ElPrices=squeeze(globalCon.simData.logsout{6}.Values.Data(1,1,2:end));
 consensusCon.ElPrices=squeeze(consensusCon.out.logsout{6}.Values.Data(1,1,2:end));
 
-consumptionNoise=globalCon.simData.logsout{5}.Values.Data(2:end,1); 
+%Taking out the actual consumption 
+consumptionActual=globalCon.simData.logsout{5}.Values.Data(2:end,1); 
 
+%Taking out the predicted consumption  
 globalCon.consumptionPred=squeeze(globalCon.simData.logsout{4}.Values.Data(1,1,2:end)); 
 consensusCon.consumptionPred=squeeze(consensusCon.out.logsout{4}.Values.Data(1,1,2:end));
 
+%Getting the volume [m^3]
 globalCon.Volume=globalCon.simData.logsout{3}.Values.Data/1000*c.At; 
-consensusCon.Volume=consensusCon.out.logsout{17}.Values.Data(2:end,1);
-%% Determine the electricity bill: 
+consensusCon.Volume=consensusCon.out.logsout{18}.Values.Data(2:end,1);
+%% Determine the electricity bill
+
+%Sarting with getting a vector of all the mass flows in the prediction horizion for the the given time stamp (only needs the two first, but might as well get all)  
 for index1=2:size(consensusCon.out.logsout{14}.Values.Data,1)-1
     index=1; 
     for i=1:consensusCon.c.Nu*consensusCon.c.Nc
@@ -56,6 +53,7 @@ for index1=2:size(consensusCon.out.logsout{14}.Values.Data,1)-1
     end 
 end 
 
+%Determinging the electricty bill  
 for index=2:size(consensusCon.out.logsout{14}.Values.Data,1)-1 
     c.d=globalCon.simData.logsout{4}.Values.Data(:,:,index);
     [ElPrices] = ElectrictyPrices(index*c.ts);
@@ -65,13 +63,15 @@ for index=2:size(consensusCon.out.logsout{14}.Values.Data,1)-1
         procentEldiff(index-1,1)=(consensusCon.Bill(index-1,1)-globalCon.Bill(index-1,1))/globalCon.Bill(index-1,1)*100;
     else 
        [globalCon.Bill(index-1,1)] = eletrictyBillV2(globalCon.simData.logsout{2}.Values.Data(index,:)',ElPrices,c,globalCon.Volume(index-1,1));
-      globalCon.Bill(index-1,1)=globalCon.Bill(index-1,1)+globalCon.Bill(index-2,1);
+        globalCon.Bill(index-1,1)=globalCon.Bill(index-1,1)+globalCon.Bill(index-2,1);
        [consensusCon.Bill(index-1,1)]= eletrictyBillV2(consensusCon.uAll(:,index),ElPrices,c,consensusCon.Volume(index-1,1));
         consensusCon.Bill(index-1,1)=consensusCon.Bill(index-1,1)+consensusCon.Bill(index-2,1);
        procentEldiff(index-1,1)=(consensusCon.Bill(index-1,1)-globalCon.Bill(index-1,1))/globalCon.Bill(index-1,1)*100;
     end 
 end 
 %% Making the plot 
+
+%Mass flow  and electricty prices 
 f=figure
 subplot(5,1,1)
 hold on
@@ -91,7 +91,7 @@ xlim([0 1000])
 hold off 
 set(gca,'fontname','times')
 
-
+%Volume 
 subplot(5,1,2) 
 hold on 
 plot(globalCon.Volume)
@@ -106,11 +106,11 @@ grid
 xlabel('Hours scaled') 
 set(gca,'fontname','times')
 
-
+%Prediction consumption and actual consumption 
 subplot(5,1,3)
 hold on 
 stairs(globalCon.consumptionPred)
-stairs(consumptionNoise)
+stairs(consumptionActual)
 hold off 
 grid 
 legend('Predicted consumption','Actual consumption','Location','bestoutside')
@@ -119,6 +119,7 @@ ylabel('Mass flow [m^{3}/h]' )
 xlabel('Hours scaled') 
 set(gca,'fontname','times')
 
+%Electricty bill 
 subplot(5,1,4) 
 hold on 
 plot(globalCon.Bill)
@@ -130,7 +131,8 @@ xlabel('Scaled hours')
 ylabel('El Bill [Euro]') 
 set(gca,'fontname','times')
 
-
+%Procent wise difference in electricty bill between the global and
+%consensus ADMM 
 subplot(5,1,5) 
 hold on 
 plot(procentEldiff)
