@@ -137,8 +137,8 @@ else
     PipeResistance2= @(u) c.rf2/c.condScaling*c.A_32*(u.*abs(u).*abs(u)); 
     
     %Definine pipe resistance with both flows presented: 
-    PipeResistanceTogether1= @(u) c.A_31*u.*(c.rfTogether/10000*(abs(c.A_1*u-c.d).*(c.A_1*u-c.d))); 
-    PipeResistanceTogether2= @(u) c.A_32*u.*(c.rfTogether/10000*(abs(c.A_1*u-c.d).*(c.A_1*u-c.d))); 
+    PipeResistanceTogether1= @(u) c.A_31*u.*(c.rfTogether/c.condScaling*(abs(c.A_1*u-c.d).*(c.A_1*u-c.d))); 
+    PipeResistanceTogether2= @(u) c.A_32*u.*(c.rfTogether/c.condScaling*(abs(c.A_1*u-c.d).*(c.A_1*u-c.d))); 
 
     
     
