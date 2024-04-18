@@ -42,9 +42,11 @@ constants.rhoW=997;
 constants.g0=9.82; 
 
 %Defining effeciny of the 3 pumps 
-constants.e1=1.1; %To Be Updated!
-constants.e2=1.3; %To Be Updated!
+constants.e1=1.1; 
+constants.e2=1.3; 
 
+constants.eta1=0.909;
+constants.eta2=0.769;
 
 % Defining pipe resistance  (stupied units so not included here
 constants.rf1=0.35*10^5;%0.3*10^5; 
@@ -76,7 +78,7 @@ constants.NoiseVariance=4;
 
 
 %Defining wired K in the cost function
-constants.K=550;% 450; %450; %800
+constants.K=900;% 450; %450; %800
 
 %Weight for the price term
 constants.Kp=1; 
@@ -108,7 +110,8 @@ constants.varying_rho_iterations_numbers=10;
 constants.mu=10;  %10
 constants.tauIncr=2;%1.5; %2; 
 constants.tauDecr=2;%1.5; %2;
-
+%% Scaling for conditioning 
+constants.condScaling=10000;
 %% SMPC varaibles 
   %% Constraints   
 %Defining the primenumber for the finith field 
