@@ -1,18 +1,20 @@
-function [consumption,consumptionNoise] = consumption(currentTime)
+function [consumptionPred,consumptionActual] = consumption(currentTime)
 % Here it is desired to make a model for the consumption for the entire controller horizion, given the current time and control horizion. 
 %The input is: 
 %currentTime: the currentTime
-% usedAccTime if acclereted time is used, is a true false statement
 %% Define some values 
 %Importing constant valus: 
 c=scaled_standard_constants();
 %The time between samples 
 TimeBetweenSamples=600;
 
+
+%% Defining the size of the output matrixes: 
+consumptionPred=zeros(c.Nc,1); 
+consumptionActual=zeros(c.Nc,1);
+
+
 %% Checking if the given sample time is dividable with the sample time for the measurements of demand!
-  % Define size: 
-    consumption=zeros(c.Nc,1); 
-    consumptionNoise=zeros(c.Nc,1);
 if floor((c.ts)/TimeBetweenSamples)==(c.ts)/TimeBetweenSamples 
 else
     disp("CAN NOT WORK WITH THE GIVEN SAMPLE TIME PLZ CHANGE IT");
@@ -21,7 +23,7 @@ else
 end 
 
 
-%% Loading in the data needed for the consumption model
+%% Loading in the data needed for the consumption model, prediction, and for the acutal consumption 
 std_week=load('prediction_scaled2.mat'); 
 std_week=std_week.scaled_prediction';
 
@@ -33,10 +35,13 @@ demand_data=demand_data.scaled_consumption;
 %First the changes in sample is added for instance going 
 % from 15 mins sample to one hour and the average is taken 
 
-%Determine amount of samples needs for one sample time for the MPC
+%Determining the amount of samples needs for one sample time for the MPC
 samplesChanges=3600/TimeBetweenSamples; 
 
-%adding those sample together
+
+%% Adding those sample together for the actual demand, and the std_week  and determine the average
+%Standard week: 
+
 index=1;  
 NewStd_week=zeros(size(std_week,1)/samplesChanges,1);
 for i=1:samplesChanges:size(std_week,1) 
@@ -47,7 +52,7 @@ end
 %Determine the average: 
 NewStd_week=NewStd_week/samplesChanges;
 
-%% Next the same thing is done for the all the demand data 
+%Actual demand  
 index=1; 
 NewDemand_data=zeros(ceil(size(demand_data,1)/samplesChanges),1);
 for i=1:samplesChanges:size(demand_data,1)-samplesChanges 
@@ -57,30 +62,30 @@ end
 %Taking a average of the varaince 
 NewDemand_data=NewDemand_data/samplesChanges;
 
-%% Determining consumption model
-%First the start position is determinted in regard to time of week. 
+%% Picking out the correct values: 
+%Determine the start position in terms of the hour:  
 StartPosition=(currentTime*c.AccTime);
 
 StartPosition=round(StartPosition)/3600+1;
-%The consumption with noise is not weekly wrap around and can therefore be set: 
-consumptionNoise=NewDemand_data(StartPosition:StartPosition+c.Nc-1,1); 
-%Changing to m^3/s 
-%consumptionNoise=consumptionNoise/3600; 
+ 
 
 %Checking if enough data is avable els wrap around is needed. 
 if StartPosition+c.Nc<=size(NewStd_week,1) 
-    consumption=NewStd_week(StartPosition:StartPosition+c.Nc-1,1);
-    %Changing to m^3/s 
-    %consumption=consumption/3600;
+    %Taking out the data for the entire control horizon
+    consumptionPred=NewStd_week(StartPosition:StartPosition+c.Nc-1,1);
+    consumptionActual=NewDemand_data(StartPosition:StartPosition+c.Nc-1,1);
     return; 
 else 
-    consumption=NewStd_week(StartPosition:end); 
+    %Starting be taking out the data left in the matrix 
+    consumptionPred=NewStd_week(StartPosition:end);
+    consumptionActual=NewDemand_data(StartPosition:end); 
     %Determine how much is still missing
-    Left=c.Nc-size(consumption,1);
+    Left=c.Nc-size(consumptionPred,1);
+
     %The left is taken from the start resulting in: 
-    consumption=[consumption;NewStd_week(1:Left,1)-1]; 
-    %Changing to m^3/s 
-    %consumption=consumption/3600;
+    consumptionPred=[consumptionPred;NewStd_week(1:Left,1)]; 
+    consumptionActual=[consumptionActual;NewDemand_data(1:Left,1)];
+
     return; 
 end 
 

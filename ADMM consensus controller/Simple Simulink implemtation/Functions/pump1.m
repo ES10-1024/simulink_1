@@ -6,10 +6,11 @@ function u_hat = pump1(lambda, data, z,x,rhoValue)
 %n_unit which of the pumps is running 
 %x is the previous solution and i utilize as initial condition for the
 %solver
+%rho value, the value of penalty parameter 
 %u_hat returns the solution for the given pump 
 %% loading in scaled standard constants 
 c=scaled_standard_constants; 
-%Moving data for eletricity price and demand: 
+%Moving data for eletricity price, demand and matrix needed to solve the problem: 
 c.Je=data.Je; 
 c.d=data.d;
 c.V=data.V; 
@@ -36,19 +37,20 @@ total=c.Nc*c.Nu;
  ub=[];
  nonlcon=[];
 
- %If it desired to change the settings for the solver, use the one listed
- %below: 
- %options = [];
  options = optimoptions(@fmincon,'Algorithm','sqp');
 
 
 %% Water level in water tower (need for the cost functions)
  h=@(u) 1/c.At*(c.A_2*(c.A_1*c.ts*u/3600-c.ts*c.d/3600)+c.V);
-            %Defining inequality constraints on matrix form 
+        
+        %Defining inequality constraints on matrix form with Ax<=b 
+        %Extraction limith 
         A.extract = c.v1'*c.ts/3600;  
         B.extract = c.TdMax1;
+        %Upper pump flow limith 
         A.pumpU = c.A_31; 
-        B.pumpU = ones(c.Nc,1)*c.umax1; 
+        B.pumpU = ones(c.Nc,1)*c.umax1;
+        %LOwer pump flow limith
         A.pumpL = -eye(total);
         B.pumpL = zeros(total,1);
 
@@ -57,12 +59,22 @@ total=c.Nc*c.Nu;
         AA=[A.extract;A.pumpU;A.pumpL];
         BB=[B.extract;B.pumpU;B.pumpL];
 
-         %Defining the cost function
+        %Defining cost function: 
 
-        height1=@(u) c.g0*c.rhoW/10000*(h(u)+c.z1);
-        PipeResistance1= @(u) c.rf1/10000*c.A_31*(u.*abs(u)); 
-        PipeResistanceTogether= @(u) c.rfTogether/10000*(abs(c.A_1*u-c.d).*(c.A_1*u-c.d));  
-        J_l= @(u) ones(1,c.Nc)*(c.e1*c.Je.*(c.A_31*u.*(PipeResistance1(u)+PipeResistanceTogether(u)+height1(u))));
+        %Elevation 
+        height1=@(u) c.A_31*u.*(c.g0*c.rhoW/c.condScaling*(h(u)+c.z1));
+        %Unqie resistance 
+        PipeResistance1= @(u) c.rf1/c.condScaling*c.A_31*(u.*abs(u).*abs(u)); 
+        %Common resistance 
+        PipeResistanceTogether= @(u) c.A_31*u.*(c.rfTogether/c.condScaling*(abs(c.A_1*u-c.d).*(c.A_1*u-c.d)));  
+       %Written up power term
+        Jp= @(u) (1/c.eta1*c.Je'*(PipeResistance1(u)+PipeResistanceTogether(u)+height1(u)));
+
+        %Defining that the amount of water in the tower in the start and end
+        %has to be the same 
+        Js= @(u) c.K/3*(c.ts*ones(1,c.Nc)*(c.A_1*u/3600-c.d/3600))^2;
+        %Collecting into one cost function
+        costFunction=@(u) Js(u)+Jp(u); 
 
 
 
@@ -74,19 +86,15 @@ total=c.Nc*c.Nu;
     J_con_z = @(u) lambda'*(u-z)+c.rho/2*((u-z)'*(u-z));
 
 
-
-    %Defining that the amount of water in the tower in the start and end
-    %has to be the same 
-    Js= @(u) c.K/3*(c.ts*ones(1,c.Nc)*(c.A_1*u/3600-c.d/3600))^2;
  
     %Setting up the cost function: 
-    costFunction=@(u) (J_l(u)+Js(u)+J_con_z(u));
+    costFunctionAll=@(u) (costFunction(u)+J_con_z(u));
 
     %Initial guess
     x0 = x;
     
     %Solving the problem  
-    u_hat = fmincon(costFunction,x0,AA,BB,Aeq,beq,lb,ub,nonlcon,options);
+    u_hat = fmincon(costFunctionAll,x0,AA,BB,Aeq,beq,lb,ub,nonlcon,options);
 
 end
 

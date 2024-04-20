@@ -6,6 +6,7 @@ function u_hat= pump2(lambda, data, z,x,rhoValue)
 %n_unit which of the pumps is running 
 %x is the previous solution and i utilize as initial condition for the
 %solver
+%rhoValue The current utilized value of the penalty parameter
 %u_hat returns the solution for the given pump 
 %% loading in scaled standard constants 
 c=scaled_standard_constants; 
@@ -45,11 +46,14 @@ total=c.Nc*c.Nu;
 
 %% Water level in water tower (need for the cost functions)
  h=@(u) 1/c.At*(c.A_2*(c.A_1*c.ts*u/3600-c.ts*c.d/3600)+c.V);
-
+        %Writting up the constraints on the form Ax<=b 
+        %Extraction limith 
         A.extract = c.v1'*c.ts/3600;  
-        B.extract = c.TdMax1;
+        B.extract = c.TdMax1; 
+        %Upper pump mass flow limith 
         A.pumpU = c.A_31; 
         B.pumpU = ones(c.Nc,1)*c.umax1; 
+        %Lower pump mass flow limith 
         A.pumpL = -eye(total);
         B.pumpL = zeros(total,1);
 
@@ -59,10 +63,19 @@ total=c.Nc*c.Nu;
 
         %Defining the cost function
 
-                height2=@(u) c.g0*c.rhoW/10000*(h(u)+c.z2);
-                PipeResistance2= @(u) c.rf2/10000*c.A_32*(u.*abs(u)); 
-                PipeResistanceTogether= @(u)c.rfTogether/10000*(abs(c.A_1*u-c.d).*(c.A_1*u-c.d)); 
-                J_l= @(u) ones(1,c.Nc)*(c.e2*c.Je.*(c.A_32*u.*(PipeResistance2(u)+PipeResistanceTogether(u)+height2(u))));
+        %elevation 
+        height2=@(u) c.A_32*u.*(c.g0*c.rhoW/c.condScaling*(h(u)+c.z2));
+        %Uniq pipe resistance
+        PipeResistance2= @(u) c.rf2/c.condScaling*c.A_32*(u.*abs(u).*abs(u));
+        %common pipe resistance 
+        PipeResistanceTogether= @(u) c.A_32*u.*(c.rfTogether/c.condScaling*(abs(c.A_1*u-c.d).*(c.A_1*u-c.d))); 
+        %Writting up the power term 
+        Jp= @(u) (1/c.eta2*c.Je'*((PipeResistance2(u)+PipeResistanceTogether(u)+height2(u))));
+        %Defining that the amount of water in the tower in the start and end
+        %has to be the same 
+        Js= @(u) c.K/3*(c.ts*ones(1,c.Nc)*(c.A_1*u/3600-c.d/3600))^2;
+        %Collecting into one cost function
+        costFunction=@(u) Js(u)+Jp(u); 
 
  
      %% Cost function definition
@@ -72,20 +85,15 @@ total=c.Nc*c.Nu;
     J_con_z = @(u) lambda'*(u-z)+c.rho/2*((u-z)'*(u-z));
 
 
-
-    %Defining that the amount of water in the tower in the start and end
-    %has to be the same 
-    Js= @(u) c.K/3*(c.ts*ones(1,c.Nc)*(c.A_1*u/3600-c.d/3600))^2;
     %Defining cost function 
-    costFunction=@(u) (J_l(u)+Js(u)+J_con_z(u));
+    costFunctionAll=@(u) (costFunction(u)+J_con_z(u));
 
 
         %Initial guess
     x0 = x;
     
     %Solving the problem  
-    u_hat = fmincon(costFunction,x0,AA,BB,Aeq,beq,lb,ub,nonlcon,options);
-    %u_hat = fmincon(costFunction,x0,AA,BB);
+    u_hat = fmincon(costFunctionAll,x0,AA,BB,Aeq,beq,lb,ub,nonlcon,options);
 
     
 

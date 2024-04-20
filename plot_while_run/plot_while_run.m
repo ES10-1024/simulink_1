@@ -2,8 +2,8 @@ close
 clear 
 
 %folder = 'C:\Users\laula\OneDrive - Aalborg Universitet\10. semester\Log_files\Consensus_ADMM_test_2'
-%folder = 'C:\Users\laula\OneDrive - Aalborg Universitet\10. semester\Log_files\Consensus_ADMM_test_2'
-folder= 'C:\Users\pppc\Desktop\es1024_2023_git2\log'
+folder = 'C:\Users\is123\Documents\GitHub\P10_Simulink_V2\log'
+%folder= 'C:\Users\pppc\Desktop\es1024_2023_git2\log'
 
 ADMM_consensus = false;
 load(folder+"\controller.mat");
