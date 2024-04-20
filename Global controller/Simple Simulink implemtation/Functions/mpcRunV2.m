@@ -10,7 +10,6 @@ function [up1,uAll] = mpcRunV2(data,uPrev,scaled)
 %The output is: 
 %up1, the input which should be set on the pumps 
 %uAll, all mass flow in the entire control horizon 
-%%
 %% loading in scaled_standard_constants, and moving the data a bit around to 
 % make it easier. 
 c=scaled_standard_constants; 
@@ -144,9 +143,9 @@ else
     
     %Defining the cost function for the two pumps: 
     %Pump 1
-    Jp1= @(u) (c.e1*c.Je'*(PipeResistance1(u)+PipeResistanceTogether1(u)+height1(u))); 
+    Jp1= @(u) (1/c.eta1*c.Je'*(PipeResistance1(u)+PipeResistanceTogether1(u)+height1(u))); 
     %Pump 2 
-    Jp2= @(u) (c.e2*c.Je'*(PipeResistance2(u)+PipeResistanceTogether2(u)+height2(u))); 
+    Jp2= @(u) (1/c.eta2*c.Je'*(PipeResistance2(u)+PipeResistanceTogether2(u)+height2(u))); 
     
     %Setting the solver alogrithm to be sqp: 
     options = optimoptions(@fmincon,'Algorithm','sqp');

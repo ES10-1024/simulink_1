@@ -68,7 +68,7 @@ constants.V=56/1000;
 
 
 %Defining wired K in the cost function
-constants.K=900;% 450; %450; %800
+constants.K=900;%900;% 450; %450; %800
 
 %Setting sampletime in seconds
 constants.ts=600;%1; 
@@ -80,13 +80,13 @@ constants.Nc =24;
 constants.AccTime=6; 
 %% Variables defining for the consensus algortime 
 %Defining amount of iteration that the consensus ADMM should do 
-constants.iteration=150;
+constants.iteration=200;
 
 constants.rho=1; 
 %% If the cost function should be scaled: 
 constants.scaled=true; 
 %% If disturbance with regard to demand should be utilized: 
-constants.disturbance=true;
+constants.disturbance=false;
 %% If the electricity price should be scaled 
 constants.scaledEletricityPrice=true;
 %% If SMPC should be used for consensus ADMM 

@@ -41,6 +41,7 @@ total=c.Nc*c.Nu;
  %below: 
  %options = [];
    options = optimoptions(@fmincon,'Algorithm','sqp');
+   %options = optimoptions(@fmincon,'Algorithm','sqp','MaxFunctionEvaluations',10e6);
 
 
 
@@ -67,7 +68,7 @@ total=c.Nc*c.Nu;
     %has to be the same 
     Js= @(u) c.K/3*(c.ts*ones(1,c.Nc)*(c.A_1*u/3600-c.d/3600))^2;
     %Defining the cost function: 
-    costFunction= @(u) Js; 
+    costFunction= @(u)  Js(u); 
 %% Cost function definition
 
     %Defining the part of the cost function which is in regard to the ADMM consensus

@@ -1,36 +1,16 @@
-function u_hat = u_consensus_fmincon(lambda, data, z, n_unit,x)
-% Making the consensus problem for each of the pumps stations  where n_unit
-% describes which of the pumps the problem is solved for. 
+function u_hat = u_consensus_fmincon(lambda, z, c, n_unit,x,scaledCostFunction)
+% Making the consensus problem for each of the pumps stations and water tower where n_unit
+% describes which of the pumps  or water the problem is solved for. 
 %Lambda= Lagrangian mulptipler 
 %z the consensus variable   
+%c scaled standard constants 
 %n_unit which of the pumps is running 
-%x is the previous solution and i utilize as initial condition for the
+%x is the previous solution and is utilize as initial condition for the
+%scaledCostFunction if a scaled cost function is to be utilized. 
 %solver
 %u_hat returns the solution for the given pump 
-%% loading in scaled standard constants 
-c=scaled_standard_constants; 
-%Moving data for eletricity price and demand: 
-c.Je=data.Je; 
-c.d=data.d;
-c.V=data.V; 
 
-
-c.A_1=data.A_1; 
-c.A_2=data.A_2; 
-
-c.v1=data.v1; 
-c.v2=data.v2; 
-
-c.A_31=data.A_31; 
-c.A_32=data.A_32; 
-%sqp-legacy
- options = optimoptions(@fmincon,'Algorithm','sqp');
- %options = optimoptions(@fmincon,'Algorithm','interior-point');
-
-
- %options = optimoptions(@fmincon,'MaxFunctionEvaluations',3e3);
-
-%% Defining the total number of varaibles which has to be determinted
+%Defining the total number of varaibles which has to be determinted
 total=c.Nc*c.Nu;
  %% Need a few empty matrix to allow for the change in option for the solver
  Aeq=[];
@@ -39,95 +19,169 @@ total=c.Nc*c.Nu;
  ub=[];
  nonlcon=[];
 
- %If it desired to change the settings for the solver, use the one listed
- %below: 
- %options = optimoptions(@fmincon,'MaxFunctionEvaluations',10e4);
+ %Setting the solver to use the Alorigthm sqp 
+ options = optimoptions(@fmincon,'Algorithm','sqp');
+
 
 
 %% Water level in water tower (need for the cost functions)
-    h=@(u) c.g0*c.rhoW*1/c.At*(c.A_2*(c.A_1*u(1:total,1)-c.d)+c.V);
+ h=@(u) 1/c.At*(c.A_2*(c.A_1*c.ts*u/3600-c.ts*c.d/3600)+c.V);
 
-    
-    %% Making cost function 
+%% Making cost function based on the which of the pump or water tower it is for:
+
     %Pump one
 if (n_unit==1) 
-        %Defining inequality constraints on matrix form 
-        A.extract = c.v1';  
+        %Defining inequality constraints on matrix form  for which Ax<=b
+        %Extraction limit
+        A.extract = c.v1'*c.ts/3600;  
         B.extract = c.TdMax1;
+        %Upper pump mass flow limit 
         A.pumpU = c.A_31; 
-        B.pumpU = ones(c.Nc,1)*c.umax1; 
+        B.pumpU = ones(c.Nc,1)*c.umax1;
+        %Lower pump mass flow limit 
         A.pumpL = -eye(total);
         B.pumpL = zeros(total,1);
 
         %Collecting constraints into two matrix one which is mutliple with the optimization varaible (AA), and a costant BB: 
         AA=[A.extract;A.pumpU;A.pumpL];
         BB=[B.extract;B.pumpU;B.pumpL];
+        %Based on if a scaled or no scaled cost function should be use the
+        %cost function is written up 
+        if scaledCostFunction == false 
+                %Elevation 
+                height1=@(u) c.A_31*u/3600.*(c.g0*c.rhoW*(h(u)+c.z1));
+                %Unqie resistance 
+                PipeResistance1= @(u) c.rf1*c.A_31*(u.*abs(u)*abs(u)); 
+                %Common resistance 
+                PipeResistanceTogether= @(u) c.A_31*u/3600.*(c.rfTogether*(abs(c.A_1*u-c.d).*(c.A_1*u-c.d)));  
+                %Written up power term
+                Jp= @(u) c.ts*(1/c.eta1*c.Je'/(3600*1000)*(PipeResistance1(u)+PipeResistanceTogether(u)+height1(u)));
+                %Defining that the amount of water in the tower in the start and end
+                %has to be the same 
+                Js= @(u) c.K/3*(c.ts*ones(1,c.Nc)*(c.A_1*u/3600-c.d/3600))^2;
+                %Collecting into one cost function
+                costFunction=@(u) Js(u)+Jp(u); 
 
-        %Defining the cost function:
-        J_l= @(u) ones(1,c.Nc)*(c.e1*c.Je/1000.*(c.A_31*(u(1:total,1).*abs(u(1:total,1)).*u(1:total,1)/3600^3*c.rf1 + u(1:total,1)/3600*c.g0*c.rhoW*c.z1)+ (c.A_31*u(1:total,1)/3600).*h(u)+c.A_31*u(1:total,1)/3600.*(c.rfTogether*(c.A_1*abs(u(1:total,1))/3600).*(c.A_1*u(1:total,1)/3600))));
+
+ 
+        else 
+                %Elevation 
+                height1=@(u) c.A_31*u.*(c.g0*c.rhoW/c.condScaling*(h(u)+c.z1));
+                %Unqie resistance 
+                PipeResistance1= @(u) c.rf1/c.condScaling*c.A_31*(u.*abs(u).*abs(u)); 
+                %Common resistance 
+                PipeResistanceTogether= @(u) c.A_31*u.*(c.rfTogether/c.condScaling*(abs(c.A_1*u-c.d).*(c.A_1*u-c.d)));  
+               %Written up power term
+                Jp= @(u) (1/c.eta1*c.Je'*(PipeResistance1(u)+PipeResistanceTogether(u)+height1(u)));
+
+                %Defining that the amount of water in the tower in the start and end
+                %has to be the same 
+                Js= @(u) c.K/3*(c.ts*ones(1,c.Nc)*(c.A_1*u/3600-c.d/3600))^2;
+                %Collecting into one cost function
+                costFunction=@(u) Js(u)+Jp(u); 
+
+
+
+        end 
+
 end  
 
 %Pump two 
 if (n_unit==2)
-        %Defining constraints on matrix form 
-        A.extract = c.v2';  
+        %Defining inequality constraints on matrix form  for which Ax<=b
+        %Extraction limith 
+        A.extract = c.v2'*c.ts/3600;  
         B.extract = c.TdMax2;
+        %Upper pump mass flow limith 
         A.pumpU = c.A_32; 
-        B.pumpU = ones(c.Nc,1)*c.umax2; 
+        B.pumpU = ones(c.Nc,1)*c.umax2;
+        %Lower pump mass flow limith 
         A.pumpL = -eye(total);
         B.pumpL = zeros(total,1);
 
         %Collecting constraints into two matrix one which is mutliple with the optimization varaible (AA), and a costant BB: 
         AA=[A.extract;A.pumpU;A.pumpL];
         BB=[B.extract;B.pumpU;B.pumpL];
+        %Based on if a scaled or no scaled cost function should be use the
+        %cost function is written up 
+        if scaledCostFunction == false 
+                %elevation 
+                height2=@(u) c.A_32*u/3600.*(c.g0*c.rhoW*(h(u)+c.z2));
+                %Uniq pipe resistance 
+                PipeResistance2= @(u) c.rf2*c.A_32*(u.*abs(u).*abs(u)); 
+                %common pipe resistance 
+                PipeResistanceTogether= @(u) c.A_32*u/3600.*(c.rfTogether*(abs(c.A_1*u-c.d).*(c.A_1*u-c.d))); 
+                %Writting up the power term 
+                Jp= @(u) c.ts*(1/c.eta2*c.Je'/(3600*1000)*(PipeResistance2(u)+PipeResistanceTogether(u)+height2(u)));
+                %Defining that the amount of water in the tower in the start and end
+                %has to be the same 
+                Js= @(u) c.K/3*(c.ts*ones(1,c.Nc)*(c.A_1*u/3600-c.d/3600))^2;
+                %Collecting into one cost function
+                costFunction=@(u) Js(u)+Jp(u); 
 
-        %Defining the cost function
-        J_l = @(u) ones(1,c.Nc)*(c.e2*c.Je/1000.*(c.A_32*(u(1:total,1).*u(1:total,1).*abs(u(1:total,1))/3600^3*c.rf2 + u(1:total,1)/3600*c.g0*c.rhoW*c.z2)+(c.A_32*u(1:total,1)/3600).*h(u)+c.A_32*u(1:total,1)/3600.*(c.rfTogether*(c.A_1*abs(u(1:total,1))/3600).*(c.A_1*u(1:total,1)/3600))));
+        
+        else 
+                %elevation 
+                height2=@(u) c.A_32*u.*(c.g0*c.rhoW/c.condScaling*(h(u)+c.z2));
+                %Uniq pipe resistance
+                PipeResistance2= @(u) c.rf2/c.condScaling*c.A_32*(u.*abs(u).*abs(u));
+                %common pipe resistance 
+                PipeResistanceTogether= @(u) c.A_32*u.*(c.rfTogether/c.condScaling*(abs(c.A_1*u-c.d).*(c.A_1*u-c.d))); 
+                %Writting up the power term 
+                Jp= @(u) (1/c.eta2*c.Je'*((PipeResistance2(u)+PipeResistanceTogether(u)+height2(u))));
+                %Defining that the amount of water in the tower in the start and end
+                %has to be the same 
+                Js= @(u) c.K/3*(c.ts*ones(1,c.Nc)*(c.A_1*u/3600-c.d/3600))^2;
+                %Collecting into one cost function
+                costFunction=@(u) Js(u)+Jp(u); 
+        end 
+
 end 
 
 
 %Water tower
 if n_unit==3
+    %Defining inequality constraints on matrix form  for which Ax<=b
     %Defining constraints, each pump mass flow has to be above zero, upper
     %and lower water volumen limit
     A.pumpL = -eye(total);
     B.pumpL = zeros(total,1);
-    
-    A.towerL=-c.A_2*c.A_1; 
-    B.towerL=-c.Vmin*ones(c.Nc,1)+c.V*ones(c.Nc,1)-c.A_2*c.d;  
-
-    A.towerU=c.A_2*c.A_1;
-    B.towerU=c.Vmax*ones(c.Nc,1)-c.V*ones(c.Nc,1)+c.A_2*c.d;  
+    %Lower water tower limith 
+    A.towerL=-c.A_2*c.A_1*c.ts/3600; 
+    B.towerL=-c.Vmin*ones(c.Nc,1)+c.V*ones(c.Nc,1)-c.A_2*c.ts*c.d/3600;  
+    %Upper water tower limith 
+    A.towerU=c.A_2*c.A_1*c.ts/3600;
+    B.towerU=c.Vmax*ones(c.Nc,1)-c.V*ones(c.Nc,1)+c.A_2*c.ts*c.d/3600;  
 
    %Collecting constraints into two matrix one which is mutliple with the optimization varaible (AA), and a costant BB: 
     AA=[A.pumpL;A.towerL;A.towerU];
     BB=[B.pumpL;B.towerL;B.towerU];
     
+    Js= @(u) c.K/3*(c.ts*ones(1,c.Nc)*(c.A_1*u/3600-c.d/3600))^2;
+    
     %Defining the cost function: 
-    J_l= @(u) 0; 
+    costFunction= @(u) Js(u); 
+    %costFunction= @(u) 0; 
+
 end 
 
     %% Cost function definition
 
     %Defining the part of the cost function which is in regard to the ADMM consensus
     %algortime 
-    J_con_z = @(u) lambda'*(u(1:total,1)-z)+c.rho/2*((u(1:total,1)-z)'*(u(1:total,1)-z));
+    J_con_z = @(u) lambda'*(u-z)+c.rho/2*((u-z)'*(u-z));
 
 
 
-    %Defining that the amount of water in the tower in the start and end
-    %has to be the same 
-    Js= @(u) c.K*(ones(1,c.Nc)*(c.A_1*u(1:total,1)-c.d))^2;
+  
     
     %Making the entire cost function
-    costFunction=@(u) (J_l(u)+Js(u)+J_con_z(u));
-    
+    costFunctionAll=@(u) (costFunction(u)+J_con_z(u));
     %Initial guess
     x0 = x;
     
     %Solving the problem  
-    u_hat = fmincon(costFunction,x0,AA,BB,Aeq,beq,lb,ub,nonlcon,options);
-    %u_hat = fmincon(costFunction,x0,AA,BB);
+    u_hat = fmincon(costFunctionAll,x0,AA,BB,Aeq,beq,lb,ub,nonlcon,options);
 
 end
 

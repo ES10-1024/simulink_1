@@ -57,9 +57,9 @@ clear i
     
     %Defining the cost function for the two pumps: 
     %Pump 1
-    Jl1= @(u) c.ts*ones(1,1)*(c.e1*Je(1,1)/(3600*1000).*(c.A_31*u/3600.*(PipeResistance1(u)+PipeResistanceTogether(u)+height1(u)))); 
+    Jl1= @(u) c.ts*ones(1,1)*(1/c.eta1*Je(1,1)/(3600*1000).*(c.A_31*u/3600.*(PipeResistance1(u)+PipeResistanceTogether(u)+height1(u)))); 
     %Pump 2 
-    Jl2= @(u) c.ts*ones(1,1)*(c.e2*Je(1,1)/(3600*1000).*(c.A_32*u/3600.*(PipeResistance2(u)+PipeResistanceTogether(u)+height2(u)))); 
+    Jl2= @(u) c.ts*ones(1,1)*(1/c.eta2*Je(1,1)/(3600*1000).*(c.A_32*u/3600.*(PipeResistance2(u)+PipeResistanceTogether(u)+height2(u)))); 
     
     costFunction=@(u) (Jl1(u)+Jl2(u));
 

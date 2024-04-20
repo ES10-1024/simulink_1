@@ -85,10 +85,6 @@ total=c.Nc*c.Nu;
     J_con_z = @(u) lambda'*(u-z)+c.rho/2*((u-z)'*(u-z));
 
 
-
-    %Defining that the amount of water in the tower in the start and end
-    %has to be the same 
-    Js= @(u) c.K/3*(c.ts*ones(1,c.Nc)*(c.A_1*u/3600-c.d/3600))^2;
     %Defining cost function 
     costFunctionAll=@(u) (costFunction(u)+J_con_z(u));
 
