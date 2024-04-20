@@ -19,7 +19,7 @@ close all
 %% Adding path and standard values
 c=scaled_standard_constants; 
 %% Define the amount of scaled hours it is desired to simulate for: 
-simHour=1; 
+simHour=24; 
 
 %Making calculatation to get it to fit with the sacled time and make it
 %such matlab likes it 

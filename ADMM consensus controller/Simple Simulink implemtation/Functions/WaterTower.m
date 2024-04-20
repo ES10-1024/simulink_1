@@ -67,6 +67,8 @@ total=c.Nc*c.Nu;
     %Defining that the amount of water in the tower in the start and end
     %has to be the same 
     Js= @(u) c.K/3*(c.ts*ones(1,c.Nc)*(c.A_1*u/3600-c.d/3600))^2;
+    %Js= @(u) c.K/3*(abs(ones(1,c.Nc)*(c.A_1*u-c.d)));
+
     %Defining the cost function: 
     costFunction= @(u)  Js(u); 
 %% Cost function definition

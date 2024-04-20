@@ -67,8 +67,8 @@ constants.V=56/1000;
 %% MPC tuning parameter
 
 
-%Defining wired K in the cost function
-constants.K=0;% 450; %450; %800
+%Defining kappa in the cost function
+constants.K=900; %450; %800
 
 %Weight for the price term
 constants.Kp=1; 
@@ -83,13 +83,13 @@ constants.Nc =24;
 constants.AccTime=6; 
 %% Variables defining for the consensus algortime 
 %Defining amount of iteration that the consensus ADMM should do 
-constants.iteration=200;
+constants.iteration=150;
 
 constants.rho=1; 
 %% If the cost function should be scaled: 
 constants.scaled=true; 
 %% If disturbance with regard to demand should be utilized: 
-constants.disturbance=false;
+constants.disturbance=true;
 %% If the electricity price should be scaled 
 constants.scaledEletricityPrice=true;
 %% If SMPC should be used for consensus ADMM 
