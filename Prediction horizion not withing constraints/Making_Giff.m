@@ -3,12 +3,16 @@ set(fig1, 'Position', [0 0 1920 1080])
 set(0, 'DefaultAxesFontName', 'Times');
 set(0, 'DefaultLegendFontName', 'Times');
 clf(1)
-for index=1:size(VolumePred,2)
+%for index=1:size(VolumePred,2)
+    for index=2:size(VolumePred,2)
     clf(1)
     hold on 
     offset=index:1:size(VolumePred,2)+index-1;
+    %offset=index-1:1:size(VolumePred,2)+index-2;
+
     plot(Volume(1:index,:)*1000) 
-    plot(offset,VolumePred(:,index)*1000,'--')
+    %plot(offset,VolumePred(:,index)*1000,'--')
+    plot(offset,VolumePred(:,index-1)*1000,'--')
     yline(c.Vmin*1000)
     yline(c.Vmax*1000)
     hold off 
