@@ -9,7 +9,7 @@ close all
 addpath("Global controller\Simple Simulink implemtation\Functions\")
 c=scaled_standard_constants; 
 %% Define the amount of scaled hours it is desired to simulate for: 
-simHour=500; 
+simHour=24; 
 
 %Making calculatation to get it to fit with the sacled time and make it
 %such matlab likes it 
@@ -30,7 +30,7 @@ end
 
 % Getting the electricity prices, actual consumption, prediction horizion
 % and the volume in the water tower 
-for index=2:size(simData.logsout{14}.Values.Data,1)
+for index=2:size(simData.logsout{1}.Values.Data,3) 
     [temp]=ElectrictyPrices(index*c.ts); 
     ElPrices(index-1)=temp(1,1);
 end 
@@ -90,4 +90,9 @@ set(gca,'fontname','times')
 
 
 %exportgraphics(f,'global_controller_scaled_with_disturbance_with_Kappa.pdf')
+
+%% 
+for index=2:size(simData.logsout{1}.Values.Data,3) 
+    [VolumePred(:,index-1)] = ModelPredicted(Volume(index,1),simData.logsout{2}.Values.Data(index,:)',simData.logsout{4}.Values.Data(:,:,index)); 
+end 
 

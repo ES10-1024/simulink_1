@@ -15,6 +15,8 @@ c.d=data.d;
 c.V=data.V; 
 c.rho=rhoValue; 
 
+
+
 c.A_1=data.A_1; 
 c.A_2=data.A_2; 
 
@@ -45,9 +47,8 @@ u=opti.variable(total,1);
     
     %Lower volume limith for the water tower 
     A.towerL=-c.A_2*c.A_1*c.ts/3600; 
-    B.towerL=-c.Vmin*ones(c.Nc,1)+c.V*ones(c.Nc,1)-c.A_2*c.ts*c.d/3600; 
-
-
+    B.towerL=-c.Vmin*ones(c.Nc,1)+c.V*ones(c.Nc,1)-c.A_2*c.ts*c.d/3600;  
+    
     %Upper volume limith for the water tower 
     A.towerU=c.A_2*c.A_1*c.ts/3600;
     B.towerU=c.Vmax*ones(c.Nc,1)-c.V*ones(c.Nc,1)+c.A_2*c.ts*c.d/3600;  
@@ -55,9 +56,13 @@ u=opti.variable(total,1);
    %Collecting constraints into two matrix one which is mutliple with the optimization varaible (AA), and a costant BB: 
     AA=[A.pumpL;A.towerL;A.towerU];
     BB=[B.pumpL;B.towerL;B.towerU];
-    
+    %% Cost function 
+    %Defining that the amount of water in the tower in the start and end
+    %has to be the same 
+    Js= c.K/3*(c.ts*ones(1,c.Nc)*(c.A_1*u/3600-c.d/3600))^2;
+
     %Defining the cost function: 
-    costFunction= 0;
+    costFunction= Js;
     %% Defining constraints  in casadi 
     opti.subject_to(AA*u<=BB);
     %% Cost function definition

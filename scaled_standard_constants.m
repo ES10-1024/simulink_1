@@ -89,7 +89,7 @@ constants.rho=1;
 %% If the cost function should be scaled: 
 constants.scaled=true; 
 %% If disturbance with regard to demand should be utilized: 
-constants.disturbance=true;
+constants.disturbance=false;
 %% If the electricity price should be scaled 
 constants.scaledEletricityPrice=true;
 %% If SMPC should be used for consensus ADMM 

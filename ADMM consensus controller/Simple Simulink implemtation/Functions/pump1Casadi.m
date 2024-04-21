@@ -10,11 +10,12 @@ function u_hat = pump1(lambda, data, z,x,rhoValue)
 %u_hat returns the solution for the given pump 
 %% loading in scaled standard constants 
 c=scaled_standard_constants; 
-%Moving data for eletricity price and demand: 
+%Moving data for eletricity price, demand and matrix needed to solve the problem: 
 c.Je=data.Je; 
 c.d=data.d;
 c.V=data.V; 
 c.rho=rhoValue; 
+
 
 
 c.A_1=data.A_1; 
@@ -39,7 +40,7 @@ u=opti.variable(total,1);
 
 %% Water level in water tower (need for the cost functions)
  h= 1/c.At*(c.A_2*(c.A_1*c.ts*u/3600-c.ts*c.d/3600)+c.V);
-
+        
         %Defining inequality constraints on matrix form with Ax<=b 
         %Extraction limith 
         A.extract = c.v1'*c.ts/3600;  
@@ -51,27 +52,30 @@ u=opti.variable(total,1);
         A.pumpL = -eye(total);
         B.pumpL = zeros(total,1);
 
+
         %Collecting constraints into two matrix one which is mutliple with the optimization varaible (AA), and a costant BB: 
         AA=[A.extract;A.pumpU;A.pumpL];
         BB=[B.extract;B.pumpU;B.pumpL];
 
-
         %Defining cost function: 
 
         %Elevation 
-        height1= c.A_31*u.*(c.g0*c.rhoW/c.condScaling*(h(u)+c.z1));
+        height1= c.A_31*u.*(c.g0*c.rhoW/c.condScaling*(h+c.z1));
         %Unqie resistance 
-        PipeResistance1= c.rf1/c.condScaling*c.A_31*(u.*abs(u).*abs(u)); 
+        PipeResistance1=  c.rf1/c.condScaling*c.A_31*(u.*abs(u).*abs(u)); 
         %Common resistance 
-        PipeResistanceTogether= c.A_31*u.*(c.rfTogether/c.condScaling*(abs(c.A_1*u-c.d).*(c.A_1*u-c.d)));  
+        PipeResistanceTogether=  c.A_31*u.*(c.rfTogether/c.condScaling*(abs(c.A_1*u-c.d).*(c.A_1*u-c.d)));  
        %Written up power term
-        Jp= (1/c.eta1*c.Je'*(PipeResistance1+PipeResistanceTogether+height1));
+        Jp=  (1/c.eta1*c.Je'*(PipeResistance1+PipeResistanceTogether+height1));
 
         %Defining that the amount of water in the tower in the start and end
         %has to be the same 
-        Js= c.K/2*(c.ts*ones(1,c.Nc)*(c.A_1*u/3600-c.d/3600))^2;
+        Js=  c.K/3*(c.ts*ones(1,c.Nc)*(c.A_1*u/3600-c.d/3600))^2;
+        %Js= @(u) c.K/3*(abs(ones(1,c.Nc)*(c.A_1*u-c.d)));
+        
         %Collecting into one cost function
         costFunction= Js+Jp; 
+
 
     %% Defining constraints 
     opti.subject_to(AA*u<=BB);
@@ -83,14 +87,11 @@ u=opti.variable(total,1);
 
 
 
-    %Defining that the amount of water in the tower in the start and end
-    %has to be the same 
-    Js=  c.K/2*(ones(1,c.Nc)*(c.A_1*u(1:total,1)-c.d))^2;
-    
+
     %Making the entire cost function
-    costFunction= (J_l+Js+J_con_z);
+    costFunctionAll= (costFunction+J_con_z);
     %Defining that the cost function is to be minimized: 
-    opti.minimize(costFunction); 
+    opti.minimize(costFunctionAll); 
 
     %Selecting solver (just using the recommanded!) 
     opti.solver('ipopt');
