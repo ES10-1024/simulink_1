@@ -93,6 +93,6 @@ set(gca,'fontname','times')
 
 %% 
 for index=2:size(simData.logsout{1}.Values.Data,3) 
-    [VolumePred(:,index-1)] = ModelPredicted(Volume(index,1),simData.logsout{2}.Values.Data(index,:)',simData.logsout{4}.Values.Data(:,:,index)); 
+    [VolumePred(:,index-1)] = ModelPredicted(Volume(index-1,1),simData.logsout{2}.Values.Data(index,:)',simData.logsout{4}.Values.Data(:,:,index)); 
 end 
 

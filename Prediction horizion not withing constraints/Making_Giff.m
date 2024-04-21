@@ -18,6 +18,8 @@ for index=1:size(VolumePred,2)
     ylabel("Water level [L]")
     title("Global controller")
 
+    ylim([0 160])
+
     %% Making the gif!
     drawnow()
     frame = getframe(1);

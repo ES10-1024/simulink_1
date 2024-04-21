@@ -14,9 +14,13 @@ function [up1,uAll] = mpcRunV2(data,uPrev,scaled)
 % make it easier. 
 c=scaled_standard_constants; 
 
-c.d=data.d(:,:,end); 
-c.Je=data.Je(:,end); 
-c.V=data.V(end,1); 
+% c.d=data.d(:,:,end); 
+% c.Je=data.Je(:,end); 
+% c.V=data.V(end,1); 
+
+c.d=data.d; 
+c.Je=data.Je; 
+c.V=data.V; 
 
 % Defining the total number of varaibles which has to be determinted
 total=c.Nc*c.Nu;
@@ -80,7 +84,7 @@ B.pumpU2 = ones(c.Nc,1)*c.umax2;
 
 %Water Tower upper and lower limith: 
 A.towerL=-c.A_2*c.A_1*c.ts/3600; 
-B.towerL=-c.Vmin*ones(c.Nc,1)+c.V*ones(c.Nc,1)-c.A_2*c.ts*c.d/3600;  
+B.towerL=-c.Vmin+c.V-c.A_2*c.ts*c.d/3600;  
 
 A.towerU=c.A_2*c.A_1*c.ts/3600;
 B.towerU=c.Vmax*ones(c.Nc,1)-c.V*ones(c.Nc,1)+c.A_2*c.ts*c.d/3600;  

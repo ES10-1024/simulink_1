@@ -134,7 +134,9 @@ end
 
 %% 
 for index=2:size(simData.logsout{14}.Values.Data,3) 
+    %[VolumePred(:,index-1)] = ModelPredicted(Volume(index,1),uUsed(:,index-1),simData.logsout{5}.Values.Data(:,:,index)); 
     [VolumePred(:,index-1)] = ModelPredicted(Volume(index,1),uUsed(:,index-1),simData.logsout{5}.Values.Data(:,:,index)); 
+
 end 
 
 %% 
