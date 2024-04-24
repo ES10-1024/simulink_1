@@ -29,10 +29,10 @@ clf(1)
     frame = getframe(1);
     im = frame2im(frame);
     [imind,cm] = rgb2ind(im,256);
-    if index <2 
-        imwrite(imind,cm,"gifs"+".gif",'gif','DelayTime',655, 'Loopcount',inf);
+    if index <3  %if index <2
+        imwrite(imind,cm,"gifs"+".gif",'gif','DelayTime',0.25, 'Loopcount',inf);
     else
-        imwrite(imind,cm,"gifs"+".gif",'gif','DelayTime',655,'WriteMode','append');
+        imwrite(imind,cm,"gifs"+".gif",'gif','DelayTime',0.25,'WriteMode','append');
     end 
 
         exportgraphics(fig1,"global_controller.gif", Append=true)

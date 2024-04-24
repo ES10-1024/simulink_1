@@ -19,7 +19,7 @@ close all
 %% Adding path and standard values
 c=scaled_standard_constants; 
 %% Define the amount of scaled hours it is desired to simulate for: 
-simHour=24; 
+simHour=1; 
 
 %Making calculatation to get it to fit with the sacled time and make it
 %such matlab likes it 
@@ -121,7 +121,7 @@ delete(a)
 
 for index=2:size(simData.logsout{14}.Values.Data,3) 
      for entire=1:c.Nu*c.Nc
-        if mod(index, 2) == 1
+        if mod(entire, 2) == 1
             %The number is odd use first entire 
             uUsed(entire,index-1)=simData.logsout{14}.Values.Data(entire,1,index);
         else

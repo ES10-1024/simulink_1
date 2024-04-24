@@ -83,13 +83,13 @@ constants.Nc =24;
 constants.AccTime=6; 
 %% Variables defining for the consensus algortime 
 %Defining amount of iteration that the consensus ADMM should do 
-constants.iteration=150;
+constants.iteration=125;%150;
 
 constants.rho=1; 
 %% If the cost function should be scaled: 
 constants.scaled=true; 
 %% If disturbance with regard to demand should be utilized: 
-constants.disturbance=false;
+constants.disturbance=true;
 %% If the electricity price should be scaled 
 constants.scaledEletricityPrice=true;
 %% If SMPC should be used for consensus ADMM 
