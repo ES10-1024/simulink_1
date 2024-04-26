@@ -3,8 +3,8 @@ function constants = scaled_standard_constants()
 %Define the maximum amount each pump are allowed to pump during a day
 
 
-constants.TdMax1=10;%3.6; 
-constants.TdMax2=10;%3.6;
+constants.TdMax1=3.6; 
+constants.TdMax2=3.6;
 
 % Define max mass flow for each pump (m^3/h) 
 constants.umax1=0.3;   
@@ -94,6 +94,14 @@ constants.disturbance=true;
 constants.scaledEletricityPrice=true;
 %% If SMPC should be used for consensus ADMM 
 constants.UseSMPC=false; 
+%% If rho should changes its value in the end to ensure consensus 
+constants.changeRhoEnd=true;
+%The value rho should have in the end 
+constants.RhoEnd=2000; 
+%The iteration number that rho should change to a higher number 
+constants.iterationRhoChange=100; 
+
+
 %% Define if it is allowed to vary rho if it is the case how many iterations 
 constants.varying_rho=true; 
 constants.varying_rho_iterations_numbers=10; 
