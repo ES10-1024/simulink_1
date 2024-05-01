@@ -118,5 +118,5 @@ constants.prime=10000019;
 % Defining scaling factor 
 constants.scaling=10000;
 
-constants.sMPCOffset=1;
+constants.sMPCOffset=5;
 end
