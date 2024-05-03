@@ -97,9 +97,9 @@ constants.UseSMPC=false;
 %% If rho should changes its value in the end to ensure consensus 
 constants.changeRhoEnd=true;
 %The value rho should have in the end 
-constants.RhoEnd=2000; 
+constants.RhoEnd=500; 
 %The iteration number that rho should change to a higher number 
-constants.iterationRhoChange=100; 
+constants.iterationRhoChange=30; 
 
 
 %% Define if it is allowed to vary rho if it is the case how many iterations 
